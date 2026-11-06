@@ -1,9 +1,17 @@
 {
   "name": "aibank",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "description": "银行智能体超市 · 培训演示版",
   "main": "server.js",
   "scripts": { "start": "node server.js" },
-  "engines": { "node": ">=20" }
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "htm": "3.1.1",
+    "mammoth": "1.8.0",
+    "pdfjs-dist": "4.10.38",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "three": "0.160.0"
+  }
 }

@@ -3,494 +3,266 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#13293D">
+<meta name="theme-color" content="#050d1f">
 <title>银行智能体超市 · 培训演示版</title>
 <style>
 :root{
-  --bg:#EEF1EF;--paper:#FFFFFF;--soft:#F7F9F8;--ink:#13293D;--ink2:#2E4453;--muted:#4A5F6B;--muted2:#6B7F89;
-  --line:#C9D3D1;--line2:#E4E9E7;--btnline:#B8C4C1;--green:#1F6E5A;--green-soft:#E3EFEA;--green-ink:#17543F;
-  --seal:#B23A2B;--seal-soft:#F6E1DD;--seal-ink:#8E2B1F;--amber:#B7791F;--amber-soft:#FBF0D9;--amber-ink:#8A5A00;
-  --head:#13293D;--head-ink:#EEF1EF;--head-muted:#9FB3BD;--head-on:#1E3A52;--live:#7FC4A9;
-  --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC","SimSun",serif;
+  --bg:#040b1c;--bg2:#071531;--panel:rgba(12,34,78,.55);--panel2:rgba(9,26,60,.72);--glass:rgba(40,110,220,.10);
+  --line:rgba(96,165,250,.22);--line2:rgba(96,165,250,.38);--ink:#e8f1ff;--ink2:#b9cbe8;--muted:#7f97bd;--dim:#58709a;
+  --cyan:#38d6ff;--blue:#2f7bff;--blue2:#1d4ed8;--green:#22d3a0;--amber:#fbbf24;--red:#fb7185;--violet:#a78bfa;
+  --glow:0 0 0 1px rgba(56,214,255,.25),0 0 24px rgba(47,123,255,.35);
   --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC","Source Han Sans SC",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --r:14px;
 }
 *{box-sizing:border-box}
-html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.65;-webkit-text-size-adjust:100%}
-a{color:var(--green)}a:hover{color:var(--ink)}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(1200px 600px at 70% -10%,#0c2a63 0%,transparent 60%),radial-gradient(900px 500px at 0% 30%,#0a2150 0%,transparent 55%),var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.65;-webkit-text-size-adjust:100%;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(80,150,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(80,150,255,.05) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 75%);z-index:0}
+a{color:var(--cyan)}
 button,input,select,textarea{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--green);outline-offset:2px}
-.wrap{max-width:1280px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
-header.top{background:var(--head);color:var(--head-ink);position:sticky;top:0;z-index:5}
-.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;padding-block:12px}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
-.brand b{font-family:var(--serif);font-size:20px;letter-spacing:.06em}
-.brand span{font-size:13px;color:var(--head-muted)}
-nav.tabs{display:flex;gap:4px;flex-wrap:wrap}
-nav.tabs a{color:var(--head-muted);text-decoration:none;padding:6px 14px;border-radius:4px}
-nav.tabs a[aria-current=page]{color:var(--head-ink);background:var(--head-on)}
-.live{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--live);font-size:13px}
-.live i{width:8px;height:8px;border-radius:50%;background:#4FB38D;display:inline-block}
-.notice{background:var(--amber-soft);color:var(--amber-ink);font-size:13px}
-.notice .wrap{padding-block:7px}
-main{padding-block:28px 56px}
-h1,h2,h3{margin:0;line-height:1.3;text-wrap:balance}
-h1{font-family:var(--serif);font-size:34px}
-h2{font-size:16px}
-.lede{color:var(--muted);margin:8px 0 0;max-width:62ch}
-.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--btnline);background:var(--paper);color:var(--ink);padding:7px 16px;border-radius:4px;cursor:pointer;font-size:14px;text-decoration:none}
-.btn:hover{border-color:var(--green);color:var(--ink)}
-.btn.primary{background:var(--green);border-color:var(--green);color:#fff;font-weight:500}
-.btn.primary:hover{filter:brightness(1.08);color:#fff}
-.btn.danger{color:var(--seal-ink);border-color:#D9A79F}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.btn.ghost{border-color:transparent;background:none;color:var(--muted);padding-inline:4px}
-.panel{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0}
-.ph{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:18px;margin-top:20px}
-.out{background:var(--soft);border-radius:4px;padding:14px;min-height:140px;font-size:14px;overflow-wrap:anywhere}
-.out.empty{color:var(--muted2)}
-.out h4{font-size:15px;margin:12px 0 4px}.out h4:first-child{margin-top:0}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+#root{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
+.wrap{width:100%;max-width:1360px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+
+/* 顶栏 */
+.top{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,rgba(4,11,28,.92),rgba(4,11,28,.7));backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:12px 28px;min-height:64px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none}
+.logo b{font-size:18px;letter-spacing:.04em;display:block;line-height:1.1}.logo small{display:block;font-size:10px;letter-spacing:.2em;color:var(--muted)}
+.nav{display:flex;gap:4px;flex-wrap:wrap;flex:1}
+.nav a{position:relative;display:flex;align-items:center;gap:7px;padding:9px 16px;color:var(--ink2);text-decoration:none;border-radius:8px;font-size:15px;transition:color .2s,background .2s}
+.nav a:hover{color:#fff;background:rgba(47,123,255,.12)}
+.nav a.on{color:#fff;background:linear-gradient(180deg,rgba(47,123,255,.35),rgba(47,123,255,.12));box-shadow:inset 0 -2px 0 var(--cyan)}
+.nav svg{width:17px;height:17px}
+.status{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--glass)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+.dot.warn{background:var(--amber);box-shadow:0 0 10px var(--amber)}
+.notice{font-size:12.5px;color:#fcd9a0;background:rgba(251,191,36,.08);border-bottom:1px solid rgba(251,191,36,.18)}
+.notice .wrap{padding-block:6px}
+main{flex:1;padding-block:22px 56px}
+footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);padding-block:16px}
+
+/* 通用 */
+h1,h2,h3{margin:0;line-height:1.25}
+.panel{position:relative;background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);min-width:0}
+.panel.glow{border-color:var(--line2);box-shadow:var(--glow)}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.ph h2{font-size:17px;display:flex;align-items:center;gap:9px}
+.ph h2 i{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;background:linear-gradient(135deg,var(--cyan),var(--blue));box-shadow:0 0 12px rgba(56,214,255,.5)}
+.ph h2 i svg{width:15px;height:15px;color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line2);background:rgba(47,123,255,.10);color:var(--ink);padding:8px 16px;border-radius:9px;cursor:pointer;font-size:14px;text-decoration:none;transition:transform .15s,box-shadow .2s,background .2s,border-color .2s;white-space:nowrap}
+.btn:hover{background:rgba(47,123,255,.22);border-color:var(--cyan)}
+.btn:active{transform:translateY(1px)}
+.btn.pri{background:linear-gradient(180deg,#3aa0ff,#1f62ff);border-color:#5fb4ff;color:#fff;font-weight:600;box-shadow:0 6px 20px rgba(31,98,255,.45),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn.pri:hover{box-shadow:0 8px 28px rgba(56,214,255,.55),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn.danger{border-color:rgba(251,113,133,.5);color:#fecdd3;background:rgba(251,113,133,.08)}
+.btn.ghost{border-color:transparent;background:none;color:var(--ink2);padding-inline:8px}
+.btn.sm{padding:5px 11px;font-size:13px;border-radius:7px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn svg{width:16px;height:16px}
+textarea,input[type=text],input[type=url],input[type=search],input[type=number],select{width:100%;background:rgba(3,10,26,.6);border:1px solid var(--line2);border-radius:9px;padding:9px 12px;color:var(--ink);transition:border-color .2s,box-shadow .2s}
+textarea:focus,input:focus,select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(56,214,255,.15);outline:none}
+select option{background:#0b1d42}
+textarea{min-height:160px;resize:vertical;line-height:1.6}
+::placeholder{color:#5d7398}
+.field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted);min-width:0}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.small{font-size:13px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:18px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:2px 9px;border-radius:999px;border:1px solid var(--line2);color:var(--ink2);background:rgba(47,123,255,.08);white-space:nowrap}
+.chip.c{color:#a5f3fc;border-color:rgba(56,214,255,.45);background:rgba(56,214,255,.1)}
+.chip.g{color:#a7f3d0;border-color:rgba(34,211,160,.45);background:rgba(34,211,160,.1)}
+.chip.a{color:#fde68a;border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.1)}
+.chip.r{color:#fecdd3;border-color:rgba(251,113,133,.45);background:rgba(251,113,133,.1)}
+.chip.v{color:#ddd6fe;border-color:rgba(167,139,250,.45);background:rgba(167,139,250,.1)}
+.chip button{border:0;background:none;color:inherit;cursor:pointer;padding:0 0 0 2px;font-size:13px;line-height:1}
+.alert{border-radius:9px;padding:9px 12px;font-size:14px;border:1px solid;animation:fadeUp .3s}
+.alert.bad{background:rgba(251,113,133,.1);border-color:rgba(251,113,133,.4);color:#fecdd3}
+.alert.good{background:rgba(34,211,160,.1);border-color:rgba(34,211,160,.4);color:#bbf7d0}
+.alert.warn{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.4);color:#fde68a}
+.out{background:rgba(3,10,26,.55);border:1px solid var(--line);border-radius:10px;padding:14px;min-height:150px;font-size:14.5px;overflow-wrap:anywhere;color:var(--ink)}
+.out.empty{color:var(--dim)}
+.out h4{font-size:15px;margin:12px 0 4px;color:#cfe3ff}.out h4:first-child{margin-top:0}
 .out p{margin:4px 0}.out ul{margin:4px 0;padding-left:20px}
 .out table{border-collapse:collapse;margin:6px 0;font-size:13px}
 .out td,.out th{border:1px solid var(--line2);padding:4px 8px;text-align:left}
-textarea,input[type=text],input[type=search],input[type=number],select{width:100%;border:1px solid var(--btnline);background:var(--paper);border-radius:4px;padding:9px 12px;color:var(--ink)}
-textarea{min-height:170px;resize:vertical;line-height:1.6}
-.field{display:flex;flex-direction:column;gap:4px;min-width:0;font-size:13px;color:var(--muted)}
-.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.small{font-size:13px;color:var(--muted2)}
-.alert{border-radius:4px;padding:9px 12px;font-size:14px}
-.alert.bad{background:var(--seal-soft);color:var(--seal-ink)}
-.alert.good{background:var(--green-soft);color:var(--green-ink)}
-.alert.warn{background:var(--amber-soft);color:var(--amber-ink)}
-.sens{background:var(--seal-soft);color:var(--seal-ink);padding:0 3px}
-.ph-tag{color:var(--green);background:var(--green-soft);padding:0 3px;font-weight:500}
-.flag mark,mark.bad{background:var(--seal-soft);color:var(--seal-ink);padding:0 2px}
+.ph-tag{color:#67e8f9;background:rgba(56,214,255,.14);padding:0 3px;border-radius:3px;font-weight:600}
+mark.bad{background:rgba(251,113,133,.25);color:#fecdd3;padding:0 3px;border-radius:3px}
 table.t{width:100%;border-collapse:collapse;font-size:14px}
-.t th,.t td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line2);vertical-align:top}
-.t th{font-weight:500;color:var(--muted2);font-size:13px;border-bottom-color:var(--line)}
-.num{font-variant-numeric:tabular-nums;text-align:right}
+.t th,.t td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.t th{font-weight:500;color:var(--muted);font-size:13px;background:rgba(47,123,255,.06)}
+.t tr{transition:background .2s}.t tbody tr:hover{background:rgba(47,123,255,.07)}
 .scroll{overflow-x:auto}
-/* 货架凭证卡 */
-.shelf-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px}
-.rolebar{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-top:22px}
-.rolebar button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-1px;padding:10px 16px;color:var(--muted);cursor:pointer}
-.rolebar button[aria-selected=true]{color:var(--ink);font-weight:700;border-bottom-color:var(--green)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px;margin-top:20px}
-@media(max-width:420px){.grid{grid-template-columns:1fr}}
-.voucher{display:flex;background:var(--paper);border:1px solid var(--line);border-radius:6px;min-height:190px}
-.voucher.off{opacity:.7}
-.stub{width:84px;flex:none;border-right:1px dashed var(--btnline);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:18px 0}
-.stamp{width:58px;height:58px;border-radius:50%;border:2px solid currentColor;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-8deg);line-height:1.1}
-.stamp span{font-size:11px}.stamp b{font-family:var(--serif);font-size:20px}
-.lv-低{color:var(--green)}.lv-中{color:var(--amber)}.lv-高{color:var(--seal)}
-.where{font-size:12px;color:var(--muted2);writing-mode:vertical-rl;letter-spacing:.2em}
-.vbody{flex:1;min-width:0;padding:18px 20px;display:flex;flex-direction:column;gap:7px}
-.vbody h3{font-family:var(--serif);font-size:20px}
-.vbody p{margin:0;color:var(--muted);font-size:14px}
-.vbody .desc{flex:1}
-.vfoot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px}
-.vfoot .save{font-size:13px;color:var(--green)}
-.nextbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding:14px 18px;border:1px solid var(--line);border-radius:6px;background:var(--soft);margin-top:22px;font-size:14px;color:var(--muted)}
-.nextbar b{color:var(--ink)}
-/* 工作台头 */
-.ws-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
-.ws-head h1{font-size:28px}
-.tagline{display:inline-flex;gap:6px;flex-wrap:wrap}
-.chip{font-size:12px;border-radius:3px;padding:1px 8px;border:1px solid var(--line);color:var(--muted)}
-.steps{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:6px;background:var(--paper);overflow:hidden}
-.steps li{flex:1 1 200px;padding:11px 16px;border-right:1px solid var(--line);font-size:14px}
-.steps li:last-child{border-right:0}
-.steps li.done{background:var(--green-soft)}.steps li.done b{color:var(--green)}
-.steps li span{display:block;font-size:12px;color:var(--muted)}
-.redstamp{width:96px;height:96px;border-radius:50%;border:2.5px solid var(--seal);color:var(--seal);display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-10deg);text-align:center;line-height:1.3;flex:none}
-.redstamp b{font-family:var(--serif);font-size:15px}.redstamp span{font-size:11px}
-.disclaimer{font-size:13px;color:var(--seal-ink);border-top:1px dashed #D9A79F;padding-top:8px}
-.checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px 12px;font-size:14px}
-.checks label{display:flex;gap:6px;align-items:center}
+.cursor::after{content:"▍";color:var(--cyan);animation:blink 1s steps(2) infinite;margin-left:1px}
+@keyframes blink{50%{opacity:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(56,214,255,.5)}50%{box-shadow:0 0 0 8px rgba(56,214,255,0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{from{background-position:-200% 0}to{background-position:200% 0}}
+.enter{animation:fadeUp .45s both}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
+
+/* 首页 */
+.hero{position:relative;min-height:600px;margin-top:-22px;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero canvas.stage{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero .copy{position:relative;z-index:2;padding-top:34px;pointer-events:none}
+.hero h1{font-size:clamp(34px,4.6vw,58px);font-weight:800;letter-spacing:.02em;text-shadow:0 4px 30px rgba(47,123,255,.55)}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#5fd8ff,#3b82f6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{margin-top:8px;font-size:clamp(16px,1.6vw,21px);color:var(--ink2);letter-spacing:.12em}
+.hero .kpi{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;pointer-events:auto}
+.carousel{position:absolute;left:0;right:0;bottom:44px;height:268px;z-index:3;perspective:1400px}
+.card3d{position:absolute;left:50%;top:0;width:212px;height:250px;margin-left:-106px;border-radius:18px;padding:18px 16px 16px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;cursor:pointer;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 30%,rgba(10,30,70,.6)),rgba(8,22,52,.78));border:1px solid color-mix(in srgb,var(--ac) 60%,transparent);
+  box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 20px 50px rgba(0,0,0,.45),0 0 30px color-mix(in srgb,var(--ac) 35%,transparent);backdrop-filter:blur(6px);
+  transition:transform .7s cubic-bezier(.2,.8,.2,1),opacity .6s,filter .6s,box-shadow .3s;will-change:transform}
+.card3d.active{box-shadow:0 0 0 1px rgba(255,255,255,.1) inset,0 26px 60px rgba(0,0,0,.5),0 0 60px color-mix(in srgb,var(--ac) 65%,transparent)}
+.card3d .ic{width:62px;height:62px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 85%,#fff),var(--ac));box-shadow:0 8px 24px color-mix(in srgb,var(--ac) 60%,transparent),inset 0 1px 0 rgba(255,255,255,.5);margin-bottom:4px}
+.card3d .ic svg{width:34px;height:34px;color:#fff}
+.card3d h3{font-size:18px}
+.card3d p{margin:0;font-size:13px;color:var(--ink2);line-height:1.5;flex:1}
+.card3d .lv{font-size:11px;color:var(--muted)}
+.card3d .go{border-radius:999px;padding:6px 16px;font-size:13px;font-weight:600;color:#fff;background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 80%,#fff 10%),var(--ac));border:0;cursor:pointer;box-shadow:0 4px 14px color-mix(in srgb,var(--ac) 55%,transparent)}
+.card3d.off{filter:grayscale(.7) brightness(.8)}
+.card3d.off .go{background:rgba(255,255,255,.12);box-shadow:none;cursor:not-allowed}
+.cnav{position:absolute;z-index:4;bottom:150px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line2);background:rgba(8,22,52,.7);color:#fff;cursor:pointer;display:grid;place-items:center}
+.cnav.l{left:max(16px,calc(50% - 640px))}.cnav.r{right:max(16px,calc(50% - 640px))}
+.roles{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;position:absolute;left:0;right:0;bottom:8px;z-index:4}
+.roles button{border:1px solid var(--line);background:rgba(8,22,52,.6);color:var(--ink2);padding:4px 14px;border-radius:999px;cursor:pointer;font-size:13px;transition:all .2s}
+.roles button.on{color:#fff;border-color:var(--cyan);background:rgba(56,214,255,.16);box-shadow:0 0 14px rgba(56,214,255,.3)}
+.runs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:14px}
+.run{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;background:rgba(3,10,26,.45);border:1px solid var(--line);transition:transform .25s,border-color .25s}
+.run:hover{transform:translateY(-2px);border-color:var(--line2)}
+.run .ic{width:48px;height:48px;flex:none;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 85%,#fff),var(--ac));box-shadow:0 6px 18px color-mix(in srgb,var(--ac) 50%,transparent)}
+.run .ic svg{width:26px;height:26px;color:#fff}
+.run b{display:block}
+.run .st{font-size:12.5px;color:var(--muted)}
+.bar{height:5px;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:7px}
+.bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--ac,var(--cyan)),#7dd3fc);transition:width .6s}
+.bar.live i{background:linear-gradient(90deg,var(--ac,var(--cyan)),#e0f2fe,var(--ac,var(--cyan)));background-size:200% 100%;animation:shimmer 1.4s linear infinite}
+
+.mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px}
+.mod{position:relative;display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:14px;cursor:pointer;background:linear-gradient(160deg,color-mix(in srgb,var(--ac) 16%,rgba(3,10,26,.6)),rgba(3,10,26,.55));border:1px solid color-mix(in srgb,var(--ac) 35%,transparent);transition:transform .25s,box-shadow .25s,border-color .25s;animation:fadeUp .4s both}
+.mod:hover,.mod.on,.mod:focus-visible{transform:translateY(-3px);border-color:color-mix(in srgb,var(--ac) 80%,transparent);box-shadow:0 12px 30px rgba(0,0,0,.35),0 0 24px color-mix(in srgb,var(--ac) 35%,transparent)}
+.mod.off{opacity:.6}
+.mod .mh{display:flex;align-items:center;gap:12px}
+.mod .mh>div:nth-child(2){flex:1;min-width:0}
+.mod .ic{width:46px;height:46px;flex:none;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 85%,#fff),var(--ac));box-shadow:0 6px 18px color-mix(in srgb,var(--ac) 50%,transparent)}
+.mod .ic svg{width:26px;height:26px;color:#fff}
+.mod h3{font-size:17px}
+.mod p{margin:0;font-size:13.5px;color:var(--ink2);line-height:1.6;flex:1}
+.mod .mt{display:flex;gap:6px;flex-wrap:wrap}
+.mod .mf{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px dashed var(--line);padding-top:10px}
+.mod .go2{font-size:13px;font-weight:600;color:color-mix(in srgb,var(--ac) 65%,#fff);white-space:nowrap}
+.mod .bar{margin-top:0}
+
+/* 工作台 */
+.crumb{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);margin-bottom:14px}
+.crumb a{color:var(--ink2);text-decoration:none}.crumb a:hover{color:#fff}
+.ahead{display:grid;grid-template-columns:minmax(260px,1fr) minmax(280px,1.15fr) minmax(260px,1fr);gap:18px;align-items:stretch}
+@media(max-width:1020px){.ahead{grid-template-columns:1fr 1fr}.ahead .core{grid-column:1/-1;order:-1;min-height:260px}}
+@media(max-width:640px){.ahead{grid-template-columns:1fr}}
+.ainfo .top2{display:flex;gap:14px;align-items:center}
+.ainfo .big{width:72px;height:72px;flex:none;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 85%,#fff),var(--ac));box-shadow:0 10px 30px color-mix(in srgb,var(--ac) 55%,transparent),inset 0 1px 0 rgba(255,255,255,.5)}
+.ainfo .big svg{width:40px;height:40px;color:#fff}
+.ainfo h1{font-size:26px}
+.ainfo .tags{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.ainfo p{color:var(--ink2);font-size:14px;margin:0 0 10px}
+.core{position:relative;min-height:300px;border-radius:var(--r);overflow:hidden}
+.core canvas{position:absolute;inset:0;width:100%;height:100%}
+.core .pill{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;background:rgba(6,30,40,.7);border:1px solid rgba(34,211,160,.5);color:#bbf7d0;font-weight:600;box-shadow:0 0 18px rgba(34,211,160,.3);z-index:2;white-space:nowrap}
+.core .pill.run{border-color:rgba(56,214,255,.6);color:#cffafe;box-shadow:0 0 22px rgba(56,214,255,.45)}
+.core .pill.run .dot{background:var(--cyan);animation:pulse 1.2s infinite}
+.timeline{list-style:none;margin:0;padding:0 0 0 24px;position:relative;max-height:236px;overflow-y:auto}
+.timeline::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--cyan),rgba(56,214,255,.1))}
+.timeline li{position:relative;display:flex;gap:12px;padding:6px 0;font-size:14px;animation:fadeUp .35s both}
+.timeline li::before{content:"";position:absolute;left:-25px;top:13px;width:10px;height:10px;border-radius:50%;background:#0b1d42;border:2px solid var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.timeline time{font-family:var(--mono);color:var(--muted);font-size:13px;flex:none}
+.timeline .empty{color:var(--dim)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.stat{padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(47,123,255,.12),rgba(47,123,255,.03))}
+.stat span{font-size:12.5px;color:var(--muted)}
+.stat b{display:block;font-size:26px;font-variant-numeric:tabular-nums;font-family:var(--mono);background:linear-gradient(90deg,#e0f2fe,#7dd3fc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.steps span{flex:1 1 150px;font-size:13px;padding:8px 12px;border-radius:9px;border:1px solid var(--line);color:var(--muted);transition:all .4s}
+.steps span.done{border-color:rgba(34,211,160,.5);color:#bbf7d0;background:rgba(34,211,160,.08)}
+.steps span b{display:block;color:inherit}
+.stamp{width:94px;height:94px;flex:none;border-radius:50%;border:2.5px solid var(--red);color:var(--red);display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-10deg);text-align:center;line-height:1.3;font-size:11px;box-shadow:0 0 18px rgba(251,113,133,.3)}
+.stamp b{font-size:15px}
+.checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px 12px;font-size:14px}
+.checks label{display:flex;gap:7px;align-items:center;color:var(--ink2)}
+.checks input{accent-color:var(--cyan)}
 /* 对话 */
-.chat{display:flex;flex-direction:column;gap:12px;max-height:520px;overflow-y:auto;padding:4px}
-.msg{max-width:88%;padding:10px 14px;font-size:15px;white-space:pre-wrap}
-.msg.me{align-self:flex-end;background:var(--ink);color:var(--head-ink);border-radius:14px 14px 4px 14px}
-.msg.ai{align-self:flex-start;background:var(--paper);border:1px solid var(--line);border-radius:14px 14px 14px 4px;white-space:normal}
-.msg.ai.none{border-style:dashed;border-color:var(--amber)}
-.cite{border-left:3px solid var(--green);background:#F2F7F5;padding:7px 10px;font-size:13px;color:var(--ink2);margin-top:8px}
-.composer{display:flex;gap:8px;align-items:flex-end}
-.composer textarea{min-height:46px;height:46px;border-radius:22px;padding:11px 16px;background:var(--soft)}
-.send{width:46px;height:46px;border-radius:50%;border:0;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
-.sugg{display:flex;gap:8px;flex-wrap:wrap}
-.sugg button{font-size:13px;border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:5px 12px;cursor:pointer}
-/* 管理端 */
-.kpis{display:flex;flex-wrap:wrap;background:var(--paper);border:1px solid var(--line);border-radius:6px;margin-top:20px}
-.kpi{flex:1 1 200px;padding:16px 22px;border-right:1px solid var(--line2)}
-.kpi:last-child{border-right:0}
-.kpi span{font-size:13px;color:var(--muted2)}.kpi b{display:block;font-family:var(--serif);font-size:26px;font-variant-numeric:tabular-nums}
-.cell{display:inline-block;min-width:64px;padding:3px 10px;border-radius:3px;font-size:13px;cursor:pointer;border:1px solid transparent}
-.cell.on{background:var(--green-soft);color:var(--green-ink)}
-.cell.off{background:#F2F4F3;color:var(--muted2)}
-.cell.wait{border:1px dashed var(--amber);color:var(--amber-ink);cursor:default}
-.doc{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
-.doc pre{white-space:pre-wrap;margin:8px 0 0;font-family:var(--sans);font-size:13px;color:var(--muted);max-height:7.5em;overflow:hidden}
-.toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 18px;border-radius:6px;font-size:14px;z-index:20}
-footer{color:var(--muted2);font-size:12px;border-top:1px solid var(--line);padding-block:18px}
-@media(max-width:640px){h1{font-size:26px}.ws-head h1{font-size:22px}.live{margin-left:0}.stub{width:70px}.panel{padding:16px}}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.chat{display:flex;flex-direction:column;gap:12px;min-height:280px;max-height:520px;overflow-y:auto;padding:4px}
+.msg{max-width:86%;padding:10px 14px;font-size:15px;animation:fadeUp .3s}
+.msg.me{align-self:flex-end;background:linear-gradient(135deg,#2f7bff,#1d4ed8);color:#fff;border-radius:14px 14px 4px 14px;white-space:pre-wrap}
+.msg.ai{align-self:flex-start;background:rgba(3,10,26,.6);border:1px solid var(--line2);border-radius:14px 14px 14px 4px}
+.msg.ai.none{border-style:dashed;border-color:rgba(251,191,36,.6)}
+.cite{border-left:3px solid var(--cyan);background:rgba(56,214,255,.08);padding:7px 10px;font-size:13px;color:#cffafe;margin-top:8px;border-radius:0 6px 6px 0}
+.composer{display:flex;gap:8px;align-items:flex-end;margin-top:12px}
+.composer textarea{min-height:48px;height:48px;border-radius:24px;padding:12px 18px}
+.send{width:48px;height:48px;border-radius:50%;border:0;background:linear-gradient(135deg,#38d6ff,#2f7bff);color:#fff;display:grid;place-items:center;cursor:pointer;flex:none;box-shadow:0 0 18px rgba(56,214,255,.45)}
+.sugg{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.sugg button{font-size:13px;border:1px solid var(--line2);background:rgba(47,123,255,.08);color:var(--ink2);border-radius:999px;padding:5px 12px;cursor:pointer}
+.sugg button:hover{border-color:var(--cyan);color:#fff}
+.hits{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto}
+.hit{font-size:13px;padding:8px 10px;border-radius:8px;background:rgba(3,10,26,.5);border:1px solid var(--line);animation:fadeUp .3s both}
+.hit b{color:#cffafe;font-weight:600}
+.hit p{margin:4px 0 0;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+/* 知识库 */
+.kb{display:grid;grid-template-columns:200px 1fr;gap:18px}
+@media(max-width:860px){.kb{grid-template-columns:1fr}.side{flex-direction:row!important;overflow-x:auto}}
+.side{display:flex;flex-direction:column;gap:8px}
+.side button{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:11px;border:1px solid transparent;background:none;color:var(--ink2);cursor:pointer;text-align:left;white-space:nowrap;transition:all .2s}
+.side button:hover{background:rgba(47,123,255,.1)}
+.side button.on{color:#fff;background:linear-gradient(135deg,#2f7bff,#1d4ed8);box-shadow:0 6px 20px rgba(31,98,255,.4)}
+.side svg{width:18px;height:18px}
+.side .n{margin-left:auto;font-size:12px;opacity:.75}
+.drop{position:relative;border:1.5px dashed var(--line2);border-radius:14px;padding:26px 16px;text-align:center;transition:all .25s;background:radial-gradient(400px 160px at 50% 70%,rgba(56,214,255,.12),transparent)}
+.drop.over{border-color:var(--cyan);background:radial-gradient(400px 200px at 50% 60%,rgba(56,214,255,.25),transparent);transform:scale(1.01)}
+.folder{width:110px;height:84px;margin:0 auto 12px;position:relative;animation:float 3.2s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px)}}
+.folder svg{width:100%;height:100%;filter:drop-shadow(0 0 16px rgba(56,214,255,.6))}
+.drop h3{font-size:17px}
+.queue{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.qi{padding:12px 14px;border-radius:11px;border:1px solid var(--line);background:rgba(3,10,26,.45);animation:fadeUp .3s both}
+.qi .row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.pipe{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.pipe span{font-size:12px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--dim);transition:all .35s}
+.pipe span.on{border-color:rgba(56,214,255,.6);color:#cffafe;background:rgba(56,214,255,.12);animation:pulse 1.2s infinite}
+.pipe span.ok{border-color:rgba(34,211,160,.5);color:#bbf7d0;background:rgba(34,211,160,.1)}
+.pipe span.err{border-color:rgba(251,113,133,.5);color:#fecdd3}
+.tagcloud{display:flex;flex-wrap:wrap;gap:8px}
+.tagcloud button{border:1px solid var(--line2);background:rgba(47,123,255,.08);color:var(--ink2);border-radius:999px;padding:4px 12px;cursor:pointer;transition:all .2s}
+.tagcloud button.on{border-color:var(--cyan);color:#fff;background:rgba(56,214,255,.18)}
+.tagcloud button small{opacity:.7;margin-left:4px}
+.drawer{position:fixed;inset:0;z-index:50;display:flex;justify-content:flex-end;background:rgba(2,6,16,.55);backdrop-filter:blur(3px);animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0}}
+.drawer .in{width:min(560px,100%);height:100%;overflow-y:auto;background:linear-gradient(180deg,#0a1d45,#06122c);border-left:1px solid var(--line2);padding:22px;animation:slideIn .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes slideIn{from{transform:translateX(40px);opacity:0}}
+.drawer pre{white-space:pre-wrap;font-family:var(--sans);font-size:13.5px;color:var(--ink2);background:rgba(3,10,26,.5);border:1px solid var(--line);border-radius:10px;padding:12px;max-height:55vh;overflow-y:auto}
+/* 管理 */
+.cell{display:inline-block;min-width:64px;padding:4px 10px;border-radius:7px;font-size:13px;cursor:pointer;border:1px solid transparent;transition:all .2s}
+.cell.on{background:rgba(34,211,160,.14);color:#bbf7d0;border-color:rgba(34,211,160,.4)}
+.cell.off{background:rgba(255,255,255,.05);color:var(--dim)}
+.toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(8,22,52,.95);border:1px solid var(--cyan);color:#fff;padding:9px 18px;border-radius:10px;font-size:14px;z-index:60;box-shadow:var(--glow);animation:fadeUp .25s}
+.boot{display:grid;place-items:center;min-height:70vh;color:var(--muted)}
+@media(max-width:720px){
+  .hero{min-height:560px}.carousel{height:250px;bottom:46px}.card3d{width:180px;height:236px;margin-left:-90px}.cnav{display:none}
+  .top .wrap{gap:4px 10px;padding-block:8px;min-height:0}.nav{flex:1 1 100%;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.nav a{padding:7px 12px;font-size:14px;white-space:nowrap}.status{display:none}
+  .roles{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;padding:0 16px;scrollbar-width:none}.roles button{flex:none}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
+<script type="importmap">{"imports":{"three":"./vendor/three.js","htm":"./vendor/htm.js"}}</script>
 </head>
 <body>
-<header class="top">
-  <div class="wrap">
-    <a class="brand" href="#shelf"><svg width="28" height="28" viewBox="0 0 30 30" aria-hidden="true"><rect x="1.5" y="1.5" width="27" height="27" rx="3" fill="none" stroke="#7FC4A9" stroke-width="2"/><path d="M8 11h14M8 15h14M8 19h9" stroke="#7FC4A9" stroke-width="2" stroke-linecap="round"/></svg><b>智能体超市</b><span>培训演示版</span></a>
-    <nav class="tabs" aria-label="主导航"><a href="#shelf" data-nav="shelf">货架</a><a href="#kb" data-nav="kb">本行知识库</a><a href="#admin" data-nav="admin">管理端</a></nav>
-    <span class="live" id="live"><i></i>演示环境 · 仅用虚构数据</span>
-  </div>
-</header>
-<div class="notice"><div class="wrap">本页面用于培训演示，请只输入虚构内容，不要输入真实客户信息或行内资料。正式版部署在银行内网，数据不出行。</div></div>
-<main class="wrap" id="app"></main>
-<footer><div class="wrap">银行智能体超市 · 培训演示版　|　脱敏、材料核对、财务勾稽、违规用语检查在本机浏览器完成；问答与写作调用演示服务器配置的大模型，不保存对话内容。</div></footer>
-<div class="toast" id="toast" hidden></div>
-
-<script>
-(() => {
-"use strict";
-const $ = (s, el = document) => el.querySelector(s);
-const $$ = (s, el = document) => [...el.querySelectorAll(s)];
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const now = () => new Date().toTimeString().slice(0, 8);
-const toast = (t) => { const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => el.hidden = true, 1800); };
-const store = { get(k, d) { try { const v = localStorage.getItem("aibank:" + k); return v ? JSON.parse(v) : d; } catch { return d; } }, set(k, v) { try { localStorage.setItem("aibank:" + k, JSON.stringify(v)); } catch {} } };
-
-/* ---------- 数据 ---------- */
-const ROLES = ["全部", "客户经理", "柜员", "大堂经理", "授信岗", "综合岗"];
-const AGENTS = [
-  { id: "mask", name: "脱敏助手", desc: "把姓名、证件号、卡号、手机号换成编号占位符，处理完一键还原。对照表只留在本机。", roles: ["客户经理", "柜员", "大堂经理", "授信岗", "综合岗"], lvl: "高", where: "本机处理", saves: "每份材料约省 5 分钟" },
-  { id: "qa", name: "制度与业务知识问答", desc: "只依据本行制度库作答，每个回答都附条款出处；库里没有就直说没有。", roles: ["柜员", "大堂经理", "客户经理", "综合岗"], lvl: "低", where: "行内模型", saves: "每次约省 10 分钟" },
-  { id: "script", name: "客服与营销话术助手", desc: "按产品、场景和客户类型写应答话术，自动标出承诺收益等违规用语。", roles: ["柜员", "大堂经理", "客户经理"], lvl: "低", where: "行内模型", saves: "每次约省 15 分钟" },
-  { id: "minutes", name: "会议纪要与公文助手", desc: "把录音转写整理成规范纪要或通知，单列待办事项、责任人和时限。", roles: ["综合岗", "客户经理"], lvl: "中", where: "行内模型", saves: "每次约省 30 分钟" },
-  { id: "credit", name: "授信辅助", desc: "核对材料清单、检查报表勾稽、起草调查报告框架。不给审批结论。", roles: ["客户经理", "授信岗"], lvl: "高", where: "行内模型", saves: "每户约省 2 小时" },
-  { id: "contract", name: "合同与文本审查辅助", desc: "比对合同条款与本行范本，列出缺项和改动，供法务复核。", roles: ["授信岗"], lvl: "中", where: "行内模型", saves: "每份约省 40 分钟", soon: true }
-];
-const LIVE = AGENTS.filter(a => !a.soon);
-const DEFAULT_DOCS = [
-  { id: "d1", title: "个人存款业务操作规程（示例）", body: "第三条 大额存单起存金额为人民币20万元，期限分为1个月、3个月、6个月、1年、2年、3年。\n第四条 大额存单可在到期前办理部分提前支取，提前支取部分按支取日活期利率计息，剩余部分不低于起存金额的，按原利率继续计息。\n第五条 办理个人存款业务须核验客户本人有效身份证件；代理他人办理的，须同时核验代理人和被代理人有效身份证件。" },
-  { id: "d2", title: "理财产品销售管理办法（示例）", body: "第十条 销售人员不得向客户承诺保本或者承诺最低收益，不得使用“稳赚”“无风险”“收益最高”等误导性用语。\n第十一条 向65周岁及以上客户销售理财产品，应当进行风险承受能力评估，并在销售过程中录音录像。\n第十二条 客户风险承受能力评估结果有效期为一年，过期须重新评估。" },
-  { id: "d3", title: "柜面服务规范（示例）", body: "第六条 客户等候时间超过15分钟的，大堂经理应主动致歉并引导至自助设备或预约服务。\n第七条 客户投诉应当在24小时内登记，5个工作日内答复。\n第八条 柜员离开柜台须退出业务系统并锁屏。" }
-];
-const S = {
-  role: "全部", docs: store.get("docs", null) || DEFAULT_DOCS.map(d => ({ ...d })),
-  enabled: store.get("enabled", null) || Object.fromEntries(LIVE.map(a => [a.id, true])),
-  log: [], mask: { map: [], masked: "" }, chat: []
-};
-const saveDocs = () => store.set("docs", S.docs);
-const audit = (agent, action, detail) => S.log.unshift({ t: now(), agent, action, detail: String(detail || "").slice(0, 40) });
-
-/* ---------- 大模型 ---------- */
-const ERR = { 503: "演示服务器还没有配置大模型 API Key，请管理员在后台填写。", 429: "调用太频繁，请稍等一分钟再试。" };
-let aiReady = null;
-fetch("api/status").then(r => r.json()).then(j => { aiReady = !!j.ready; if (!aiReady) { const l = $("#live"); l.innerHTML = '<i style="background:#E3B35A"></i>AI 未配置，本机功能可用'; } }).catch(() => { aiReady = false; });
-async function ask(agent, input, outEl, opts = {}) {
-  const ctl = new AbortController();
-  outEl.className = "out"; outEl.innerHTML = '<span class="small">正在生成…</span>';
-  const stop = document.createElement("button"); stop.type = "button"; stop.className = "btn ghost"; stop.textContent = "停止"; stop.onclick = () => ctl.abort();
-  outEl.before(stop);
-  let text = "";
-  try {
-    const r = await fetch("api/run", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ agent, input }), signal: ctl.signal });
-    if (!r.ok || !r.body) { let m = ERR[r.status]; try { m = (await r.json()).error || m; } catch {} throw new Error(m || "生成失败，请再试一次。"); }
-    const rd = r.body.getReader(), dec = new TextDecoder(); let buf = "";
-    for (;;) {
-      const { value, done } = await rd.read(); if (done) break;
-      buf += dec.decode(value, { stream: true });
-      let i; while ((i = buf.indexOf("\n\n")) >= 0) {
-        const line = buf.slice(0, i).trim(); buf = buf.slice(i + 2);
-        if (!line.startsWith("data:")) continue;
-        let j; try { j = JSON.parse(line.slice(5)); } catch { continue; }
-        if (j.error) throw new Error(j.error);
-        if (j.t) { text += j.t; outEl.innerHTML = md(text); }
-      }
-    }
-    if (!text) throw new Error("模型没有返回内容，请再试一次。");
-    opts.done && opts.done(text);
-    return text;
-  } catch (e) {
-    if (e.name === "AbortError") outEl.innerHTML = md(text) + '<p class="small">已停止。</p>';
-    else outEl.innerHTML = md(text) + `<div class="alert bad">${esc(e.message)}</div>`;
-    return text || null;
-  } finally { stop.remove(); }
-}
-function md(t) {
-  const lines = esc(t).split("\n"); let h = "", list = false, table = false;
-  for (let l of lines) {
-    l = l.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-    if (/^\s*\|.*\|\s*$/.test(l)) {
-      if (/^\s*\|[\s:|-]+\|\s*$/.test(l)) continue;
-      if (!table) { if (list) { h += "</ul>"; list = false; } h += "<div class='scroll'><table>"; table = true; }
-      h += "<tr>" + l.trim().slice(1, -1).split("|").map(c => `<td>${c.trim()}</td>`).join("") + "</tr>"; continue;
-    }
-    if (table) { h += "</table></div>"; table = false; }
-    const hd = l.match(/^#{1,4}\s+(.*)/), li = l.match(/^\s*(?:[-*•]|\d+[.、])\s+(.*)/);
-    if (li) { if (!list) { h += "<ul>"; list = true; } h += `<li>${li[1]}</li>`; continue; }
-    if (list) { h += "</ul>"; list = false; }
-    if (hd) h += `<h4>${hd[1]}</h4>`; else if (l.trim()) h += `<p>${l}</p>`;
-  }
-  if (list) h += "</ul>"; if (table) h += "</table></div>"; return h;
-}
-async function copy(text, btn) { try { await navigator.clipboard.writeText(text); btn.textContent = "已复制"; } catch { btn.textContent = "请手动选择复制"; } setTimeout(() => btn.textContent = "复制", 1500); }
-
-/* ---------- 脱敏 ---------- */
-function maskText(src) {
-  const map = [], seen = new Map(), cnt = {};
-  const put = (k, v) => { const key = k + "|" + v; if (seen.has(key)) return seen.get(key); cnt[k] = (cnt[k] || 0) + 1; const ph = `[${k}${cnt[k]}]`; seen.set(key, ph); map.push({ ph, kind: k, val: v }); return ph; };
-  let t = src;
-  t = t.replace(/(?<!\d)\d{17}[\dXx](?!\d)/g, m => put("证件", m));
-  t = t.replace(/(?<!\d)1[3-9]\d{9}(?!\d)/g, m => put("手机", m));
-  t = t.replace(/(?<!\d)0\d{2,3}-\d{7,8}(?!\d)/g, m => put("电话", m));
-  t = t.replace(/(?<!\d)(?:\d[ -]?){15,18}\d(?!\d)/g, m => put("卡号", m));
-  const nameRe = /(?:客户|借款人|法定代表人|联系人|担保人|配偶|申请人|客户经理|姓名[:：]?)\s*([一-龥]{2,3})(?=[，,。；;、\s（(先女的任在]|$)/g;
-  const names = new Set(); let m; while ((m = nameRe.exec(t))) names.add(m[1]);
-  [...names].sort((a, b) => b.length - a.length).forEach(n => { t = t.split(n).join(put("客户", n)); });
-  t = t.replace(/[一-龥（）()]{2,24}?(?:股份有限公司|有限责任公司|有限公司)/g, m => { const lead = m.match(/^[任在为是由与和向的及系于即]*/)[0]; return lead + put("企业", m.slice(lead.length)); });
-  t = t.replace(/(?:北京|天津|上海|重庆|河北|山西|辽宁|吉林|黑龙江|江苏|浙江|安徽|福建|江西|山东|河南|湖北|湖南|广东|海南|四川|贵州|云南|陕西|甘肃|青海|内蒙古|广西|西藏|宁夏|新疆)(?:省|市|自治区)?[一-龥\d]{2,30}?(?:号院|号楼|号|室|栋)/g, m => put("地址", m));
-  return { masked: t, map };
-}
-const restore = (text, map) => [...map].sort((a, b) => b.ph.length - a.ph.length).reduce((t, r) => t.split(r.ph).join(r.val), text);
-const BANNED = ["保本", "保证收益", "稳赚", "无风险", "零风险", "收益最高", "最高收益", "绝对安全", "肯定赚", "包赚", "刚性兑付", "保息"];
-const banned = t => BANNED.filter(w => t.includes(w));
-const VERDICT = ["同意授信", "建议授信", "建议额度", "授信额度建议", "评级为", "建议同意", "予以批准", "准予授信"];
-
-/* ---------- 路由 ---------- */
-const app = $("#app");
-function route() {
-  const h = (location.hash || "#shelf").slice(1);
-  const view = ["shelf", "kb", "admin"].includes(h) ? h : (LIVE.some(a => a.id === h) ? h : "shelf");
-  $$("nav.tabs a").forEach(a => a.toggleAttribute("aria-current", a.dataset.nav === (["kb", "admin"].includes(view) ? view : "shelf")));
-  $$("nav.tabs a[aria-current]").forEach(a => a.setAttribute("aria-current", "page"));
-  if (view === "shelf") shelf(); else if (view === "kb") kbView(); else if (view === "admin") admin();
-  else { if (!S.enabled[view]) { location.hash = "#shelf"; return; } ({ mask: agMask, qa: agQA, script: agScript, minutes: agMinutes, credit: agCredit })[view](AGENTS.find(a => a.id === view)); }
-  window.scrollTo(0, 0);
-}
-window.addEventListener("hashchange", route);
-
-function shelf() {
-  const list = AGENTS.filter(a => S.role === "全部" || a.roles.includes(S.role));
-  app.innerHTML = `<section class="shelf-head"><div><h1>今天哪件活，交给智能体先做？</h1><p class="lede">每个智能体只做一类事，结果都要你看过再用。灰色的需要管理员为你的岗位开通。</p></div>
-    <label class="field" style="min-width:260px">找智能体<input type="search" id="q" placeholder="例如：纪要、话术、授信"></label></section>
-    <div class="rolebar" role="tablist" aria-label="按岗位筛选">${ROLES.map(r => `<button type="button" role="tab" aria-selected="${r === S.role}" data-role="${r}">${r}</button>`).join("")}</div>
-    <section class="grid" id="cards" aria-label="智能体"></section>
-    <div class="nextbar"><b>下一批上架</b><span>培训与考试助手</span><span>报表与数据整理助手</span><span>贷后检查辅助</span></div>`;
-  const draw = (q = "") => { $("#cards").innerHTML = list.filter(a => !q || (a.name + a.desc).includes(q)).map(card).join("") || '<p class="small">没有找到匹配的智能体。</p>'; };
-  draw();
-  $("#q").addEventListener("input", e => draw(e.target.value.trim()));
-  $$(".rolebar button").forEach(b => b.onclick = () => { S.role = b.dataset.role; shelf(); });
-}
-function card(a) {
-  const on = !a.soon && S.enabled[a.id];
-  const btn = a.soon ? '<span class="small">即将上架</span>' : on ? `<a class="btn primary" href="#${a.id}">打开</a>` : '<button class="btn" type="button" disabled>需管理员开通</button>';
-  return `<article class="voucher${on ? "" : " off"}"><div class="stub"><div class="stamp lv-${a.lvl}"><span>敏感度</span><b>${a.lvl}</b></div><span class="where">${a.where}</span></div>
-    <div class="vbody"><h3>${a.name}</h3><p class="desc">${a.desc}</p><p class="small">适用：${a.roles.join("、")}</p>
-    <div class="vfoot"><span class="save">${a.saves}</span>${btn}</div></div></article>`;
-}
-function head(a, extra = "") {
-  return `<div class="ws-head"><a class="btn ghost" href="#shelf">← 货架</a><h1>${a.name}</h1><span class="tagline"><span class="chip lv-${a.lvl}" style="border-color:currentColor">敏感度 ${a.lvl}</span><span class="chip">${a.where}</span><span class="chip">${a.saves}</span></span>${extra}</div><p class="lede">${a.desc}</p>`;
-}
-
-/* --- 脱敏助手 --- */
-const MASK_SAMPLE = "客户张建国，身份证号610302198305124417，手机13891723456，在本行开立一类账户，卡号6217 8530 1234 5678 901。其配偶王丽娟，手机15029381122。张建国任宝鸡示例钛材有限公司法定代表人，公司地址为陕西省宝鸡市高新区示例大道88号。该公司拟申请流动资金贷款500万元，用于采购原材料。";
-function agMask(a) {
-  app.innerHTML = head(a) + `<ol class="steps" id="steps"><li id="st1"><b>1 识别替换</b><span>本机完成</span></li><li id="st2"><b>2 交给模型处理</b><span>只发送占位符版本</span></li><li id="st3"><b>3 还原并核对</b><span>用对照表换回原文</span></li></ol>
-  <div class="cols">
-    <section class="panel"><div class="ph"><h2>原始材料</h2><button class="btn" type="button" id="fill">填入示例</button></div>
-      <textarea id="src" aria-label="原始材料" placeholder="粘贴含敏感信息的材料（演示请用虚构内容）"></textarea>
-      <div class="acts"><button class="btn primary" type="button" id="run">本机脱敏</button><span class="small">原文不上传。</span></div></section>
-    <section class="panel"><div class="ph"><h2>可外发版本</h2><button class="btn" type="button" id="cp1">复制</button></div>
-      <div class="out empty" id="masked">点“本机脱敏”后，可以外发的版本显示在这里。</div>
-      <div class="ph"><h2>模型返回的摘要</h2><button class="btn primary" type="button" id="toai" disabled>发给模型写摘要</button></div>
-      <div class="out empty" id="aiout">模型只会看到占位符版本。</div></section>
-    <section class="panel"><div class="ph"><h2>对照表</h2><span class="chip" style="color:var(--seal);border-color:var(--seal)">不出本机</span></div>
-      <div class="scroll"><table class="t"><thead><tr><th>占位符</th><th>原文</th></tr></thead><tbody id="map"><tr><td colspan="2" class="small">脱敏后显示。</td></tr></tbody></table></div>
-      <div class="acts"><button class="btn primary" type="button" id="rs" disabled>还原摘要</button><button class="btn danger" type="button" id="clr">用完清除对照表</button></div>
-      <div class="out empty" id="restored">还原后的结果显示在这里。</div></section>
-  </div>`;
-  let ai = "";
-  const mark = id => $("#" + id).classList.add("done");
-  $("#fill").onclick = () => $("#src").value = MASK_SAMPLE;
-  $("#run").onclick = () => {
-    const v = $("#src").value; if (!v.trim()) { $("#masked").innerHTML = '<div class="alert warn">请先粘贴材料或点“填入示例”。</div>'; return; }
-    S.mask = maskText(v);
-    $("#masked").className = "out"; $("#masked").innerHTML = esc(S.mask.masked).replace(/\[[一-龥]+\d+\]/g, x => `<span class="ph-tag">${x}</span>`);
-    $("#map").innerHTML = S.mask.map.length ? S.mask.map.map(r => `<tr><td style="color:var(--green);white-space:nowrap">${r.ph}</td><td>${esc(r.val)}</td></tr>`).join("") : '<tr><td colspan="2" class="small">没有识别到敏感信息。</td></tr>';
-    $("#toai").disabled = false; mark("st1"); $("#st1 span").textContent = `已完成，识别 ${S.mask.map.length} 处`; audit(a.name, "本机脱敏", `识别${S.mask.map.length}处`);
-  };
-  $("#cp1").onclick = e => copy(S.mask.masked, e.target);
-  $("#toai").onclick = async () => {
-    audit(a.name, "脱敏文本发送模型", "仅占位符版本");
-    ai = await ask("mask", { text: S.mask.masked }, $("#aiout"), { done: () => { mark("st2"); $("#rs").disabled = !S.mask.map.length; } }) || "";
-  };
-  $("#rs").onclick = () => { $("#restored").className = "out"; $("#restored").innerHTML = md(restore(ai, S.mask.map)); mark("st3"); audit(a.name, "本机还原", ""); };
-  $("#clr").onclick = () => { S.mask = { map: [], masked: "" }; $("#map").innerHTML = '<tr><td colspan="2" class="small">对照表已清除，占位符无法再还原。</td></tr>'; $("#rs").disabled = true; toast("对照表已清除"); };
-}
-
-/* --- 制度问答 --- */
-function agQA(a) {
-  app.innerHTML = head(a) + `<div class="cols" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
-    <section class="panel" style="grid-column:span 2;min-height:520px"><div class="ph"><h2>提问</h2><span class="small">依据本行制度库 · 共 ${S.docs.length} 份文件</span></div>
-      <div class="chat" id="chat" aria-live="polite"></div>
-      <div class="sugg"><button type="button">大额存单能不能部分提前支取？</button><button type="button">给70岁的客户卖理财要注意什么？</button><button type="button">信用卡年费怎么减免？</button></div>
-      <div class="composer"><label style="flex:1;display:flex"><span hidden>输入问题</span><textarea id="q" placeholder="问一个制度问题，回车发送"></textarea></label><button class="send" type="button" id="send" aria-label="发送"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></section>
-  </div>`;
-  const chat = $("#chat");
-  const drawChat = () => {
-    chat.innerHTML = S.chat.length ? S.chat.map(m => m.role === "user" ? `<div class="msg me">${esc(m.content)}</div>` : `<div class="msg ai${/^未找到依据/.test(m.content) ? " none" : ""}">${render(m.content)}</div>`).join("") : '<p class="small">还没有提问。点下面的示例问题试试。</p>';
-    chat.scrollTop = chat.scrollHeight;
-  };
-  const render = t => { if (/^未找到依据/.test(t)) return md(t); const p = t.split(/\n?依据[:：]/); return md(p[0]) + (p[1] ? `<div class="cite"><b style="color:var(--green)">依据</b>　${esc(p[1].trim())}</div>` : ""); };
-  drawChat();
-  const send = async (q) => {
-    q = (q || "").trim(); if (!q) return; $("#q").value = "";
-    S.chat.push({ role: "user", content: q }); drawChat();
-    const bubble = document.createElement("div"); bubble.className = "msg ai"; chat.appendChild(bubble); chat.scrollTop = chat.scrollHeight;
-    const kb = S.docs.map(d => `《${d.title}》\n${d.body}`).join("\n\n").slice(0, 20000);
-    audit(a.name, "提问", q);
-    const out = document.createElement("div"); bubble.appendChild(out);
-    const t = await ask("qa", { question: q, history: S.chat.slice(0, -1).slice(-6), docs: S.docs.map(d => ({ title: d.title, body: d.body })) }, out);
-    S.chat.push({ role: "assistant", content: t || "（生成失败）" }); drawChat();
-  };
-  $("#send").onclick = () => send($("#q").value);
-  $("#q").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); send($("#q").value); } });
-  $$(".sugg button").forEach(b => b.onclick = () => send(b.textContent));
-}
-
-/* --- 话术 --- */
-function agScript(a) {
-  app.innerHTML = head(a) + `<div class="cols">
-    <section class="panel"><div class="ph"><h2>场景设置</h2><button class="btn" type="button" id="fill">填入违规示例</button></div>
-      <div class="fields">
-        <label class="field">产品<select id="p"><option>大额存单</option><option>理财产品</option><option>信用卡</option><option>手机银行</option><option>个人消费贷款</option></select></label>
-        <label class="field">场景<select id="sc"><option>柜面咨询</option><option>电话回访</option><option>厅堂营销</option><option>客户投诉安抚</option><option>朋友圈文案</option></select></label>
-        <label class="field">客户类型<select id="ct"><option>老年客户</option><option>年轻上班族</option><option>小微企业主</option><option>新客户</option></select></label>
-        <label class="field">语气<select id="tone"><option>亲切耐心</option><option>专业简洁</option></select></label>
-      </div>
-      <label class="field">补充要求<textarea id="extra" style="min-height:90px" placeholder="例如：重点介绍起存金额和提前支取规则"></textarea></label>
-      <div class="acts"><button class="btn primary" type="button" id="gen">生成话术</button></div><div id="reqchk"></div></section>
-    <section class="panel"><div class="ph"><h2>话术</h2><button class="btn" type="button" id="cp">复制</button></div>
-      <div class="out empty" id="out">生成两版话术，并自动检查违规用语。</div><div id="outchk"></div></section></div>`;
-  let last = "";
-  $("#fill").onclick = () => { $("#p").value = "理财产品"; $("#ct").value = "老年客户"; $("#extra").value = "跟客户强调这款产品保本，收益最高，稳赚不赔"; };
-  $("#gen").onclick = async () => {
-    const extra = $("#extra").value.trim(), bad = banned(extra);
-    $("#reqchk").innerHTML = bad.length ? `<div class="alert bad">补充要求中有违规用语：${bad.map(w => `<mark class="bad">${w}</mark>`).join(" ")}。已要求模型按规定改写。</div>` : "";
-    audit(a.name, "生成话术", `${$("#p").value}·${$("#ct").value}`);
-    last = await ask("script", { product: $("#p").value, scene: $("#sc").value, customer: $("#ct").value, tone: $("#tone").value, extra, docs: S.docs.map(d => ({ title: d.title, body: d.body })) }, $("#out"), { done: t => { const h = banned(t); $("#outchk").innerHTML = h.length ? `<div class="alert bad">话术中仍含：${h.map(w => `<mark class="bad">${w}</mark>`).join(" ")}，请修改后再用。</div>` : '<div class="alert good">合规用语检查通过：没有发现承诺收益、保本等用语。</div>'; } }) || "";
-  };
-  $("#cp").onclick = e => copy(last, e.target);
-}
-
-/* --- 纪要公文 --- */
-const MIN_SAMPLE = "王行长：今天说两件事。一是四季度存款，目前完成全年任务的百分之八十二。各网点把到期客户名单再过一遍，下周三前报上来。\n李经理：渭滨支行到期客户大概一百二十户，这周开始电话回访。\n王行长：好。二是反诈宣传，上级要求本月每个网点至少两场进社区活动。小刘你牵头，月底前把照片和总结交到综合部。\n刘明：收到，我先排时间表，周五前发群里。\n王行长：还有，厅堂排队时间长，大堂经理要主动引导用自助设备。散会。";
-function agMinutes(a) {
-  app.innerHTML = head(a) + `<div class="cols">
-    <section class="panel"><div class="ph"><h2>会议转写或要点</h2><button class="btn" type="button" id="fill">填入示例</button></div>
-      <textarea id="src" style="min-height:230px" aria-label="会议转写" placeholder="粘贴千问等工具录音转写的文字"></textarea>
-      <div class="fields"><label class="field">文种<select id="kind"><option>会议纪要</option><option>工作通知</option><option>工作总结</option></select></label><label class="field">会议名称<input type="text" id="title" value="四季度重点工作推进会"></label></div>
-      <div class="acts"><button class="btn primary" type="button" id="gen">生成</button></div></section>
-    <section class="panel"><div class="ph"><h2>初稿</h2><button class="btn" type="button" id="cp">复制</button></div>
-      <div class="out empty" id="out">生成规范格式的初稿，并列出待办（事项、责任人、时限）。</div></section></div>`;
-  let last = "";
-  $("#fill").onclick = () => $("#src").value = MIN_SAMPLE;
-  $("#gen").onclick = async () => {
-    const s = $("#src").value.trim(); if (!s) { $("#out").innerHTML = '<div class="alert warn">请先粘贴转写文字或点“填入示例”。</div>'; return; }
-    audit(a.name, "生成" + $("#kind").value, $("#title").value);
-    last = await ask("minutes", { kind: $("#kind").value, title: $("#title").value, text: s }, $("#out")) || "";
-  };
-  $("#cp").onclick = e => copy(last, e.target);
-}
-
-/* --- 授信辅助 --- */
-const REQ = { "流动资金贷款": ["营业执照", "法定代表人身份证明", "公司章程", "近三年财务报表", "近期纳税证明", "贷款用途证明（购销合同）", "征信查询授权书"], "固定资产贷款": ["营业执照", "法定代表人身份证明", "公司章程", "近三年财务报表", "项目批文或备案", "项目可行性报告", "征信查询授权书"], "抵押贷款": ["营业执照", "法定代表人身份证明", "近三年财务报表", "抵押物权属证明", "抵押物评估报告", "征信查询授权书"] };
-const ALLDOCS = [...new Set(Object.values(REQ).flat())];
-const CS = { name: "示例企业A（虚构）", ind: "钛材加工", amt: 500, ta: 8600, tl: 5200, eq: 3400, ca: 4100, cl: 3300, rev: 12500, np: 680, have: ["营业执照", "法定代表人身份证明", "公司章程", "近三年财务报表", "征信查询授权书"] };
-const FIN = [["ta", "总资产"], ["tl", "总负债"], ["eq", "所有者权益"], ["ca", "流动资产"], ["cl", "流动负债"], ["rev", "营业收入"], ["np", "净利润"]];
-function agCredit(a) {
-  app.innerHTML = head(a, '<div class="redstamp" style="margin-left:auto"><b>仅供参考</b><span>不构成审批意见</span></div>') + `<div class="cols">
-    <section class="panel"><div class="ph"><h2>授信信息</h2><button class="btn" type="button" id="fill">填入示例企业</button></div>
-      <div class="fields"><label class="field">企业名称<input type="text" id="cname"></label><label class="field">所属行业<input type="text" id="cind"></label>
-      <label class="field">授信品种<select id="ctype">${Object.keys(REQ).map(k => `<option>${k}</option>`).join("")}</select></label><label class="field">申请金额（万元）<input type="number" id="amt" inputmode="decimal"></label></div>
-      <h2>已收材料</h2><div class="checks">${ALLDOCS.map((d, i) => `<label><input type="checkbox" id="cd${i}" value="${d}">${d}</label>`).join("")}</div>
-      <h2>主要财务数据（万元）</h2><div class="fields">${FIN.map(([k, l]) => `<label class="field">${l}<input type="number" id="f_${k}" inputmode="decimal"></label>`).join("")}</div>
-      <div class="acts"><button class="btn primary" type="button" id="chk">本机核对</button><button class="btn" type="button" id="gen" disabled>生成调查报告初稿</button></div></section>
-    <section class="panel"><h2>核对结果</h2><div class="out empty" id="res">材料缺项和财务勾稽在本机计算，不调用模型。</div>
-      <div class="ph"><h2>调查报告初稿</h2><button class="btn" type="button" id="cp">复制</button></div>
-      <div class="out empty" id="out">核对后可生成初稿。</div>
-      <p class="disclaimer">本智能体只整理材料、起草初稿，不给出是否同意授信、评级或额度建议。结论由客户经理和审查岗作出。</p></section></div>`;
-  const v = k => parseFloat($("#f_" + k).value);
-  let facts = "", last = "";
-  $("#fill").onclick = () => { $("#cname").value = CS.name; $("#cind").value = CS.ind; $("#amt").value = CS.amt; $("#ctype").value = "流动资金贷款"; FIN.forEach(([k]) => $("#f_" + k).value = CS[k]); $$(".checks input").forEach(c => c.checked = CS.have.includes(c.value)); };
-  $("#chk").onclick = () => {
-    const need = REQ[$("#ctype").value], have = $$(".checks input:checked").map(c => c.value), miss = need.filter(d => !have.includes(d));
-    const [ta, tl, eq, ca, cl, rev, np] = FIN.map(([k]) => v(k)), amt = parseFloat($("#amt").value);
-    const items = [], ratios = [];
-    if ([ta, tl, eq].every(Number.isFinite)) { const d = ta - tl - eq, ok = Math.abs(d) <= Math.max(1, ta * 0.001); items.push(ok ? ["good", `资产负债表平衡：总资产 ${ta} = 总负债 ${tl} + 所有者权益 ${eq}`] : ["bad", `资产负债表不平衡：差额 ${d.toFixed(2)} 万元，请核对报表`]); }
-    else items.push(["warn", "总资产、总负债、所有者权益未填全，无法检查平衡关系"]);
-    if (ta > 0 && Number.isFinite(tl)) { const r = tl / ta * 100; ratios.push(["资产负债率", r.toFixed(1) + "%", r > 70 ? "偏高，说明偿债来源" : r > 55 ? "中等" : "较低"]); }
-    if (cl > 0 && Number.isFinite(ca)) { const r = ca / cl; ratios.push(["流动比率", r.toFixed(2), r < 1 ? "低于1，短期偿债需关注" : "大于1"]); }
-    if (rev > 0 && Number.isFinite(np)) ratios.push(["销售净利率", (np / rev * 100).toFixed(1) + "%", "同行业对比待补充"]);
-    if (rev > 0 && Number.isFinite(amt)) ratios.push(["申请金额/营业收入", (amt / rev * 100).toFixed(1) + "%", "核实采购周期与回款"]);
-    if (Number.isFinite(ca) && Number.isFinite(ta) && ca > ta) items.push(["bad", "流动资产大于总资产，数据有误"]);
-    $("#res").className = "out";
-    $("#res").innerHTML = `<h4>材料清单（${$("#ctype").value}）</h4>${miss.length ? `<div class="alert bad">缺 ${miss.length} 项：${miss.join("、")}</div>` : '<div class="alert good">材料齐全。</div>'}
-      <h4>勾稽与比率</h4>${items.map(([c, t]) => `<div class="alert ${c}" style="margin-top:6px">${esc(t)}</div>`).join("")}
-      ${ratios.length ? `<div class="scroll"><table class="t" style="margin-top:8px"><thead><tr><th>指标</th><th class="num">数值</th><th>提示</th></tr></thead><tbody>${ratios.map(r => `<tr><td>${r[0]}</td><td class="num">${r[1]}</td><td class="small">${r[2]}</td></tr>`).join("")}</tbody></table></div>` : ""}`;
-    facts = `企业：${$("#cname").value || "未填"}；行业：${$("#cind").value || "未填"}；品种：${$("#ctype").value}；申请金额：${$("#amt").value || "未填"}万元。\n已收材料：${have.join("、") || "无"}；缺项：${miss.join("、") || "无"}。\n财务数据（万元）：总资产${ta}，总负债${tl}，所有者权益${eq}，流动资产${ca}，流动负债${cl}，营业收入${rev}，净利润${np}。\n检查结果：${items.map(x => x[1]).join("；")}。比率：${ratios.map(r => r[0] + " " + r[1]).join("；")}。`;
-    $("#gen").disabled = false; audit(a.name, "本机核对", `缺${miss.length}项`);
-  };
-  $("#gen").onclick = async () => {
-    audit(a.name, "生成报告初稿", $("#cname").value);
-    last = await ask("credit", { facts }, $("#out"), { done: t => { const hit = VERDICT.filter(w => t.includes(w)); if (hit.length) $("#out").insertAdjacentHTML("beforeend", `<div class="alert bad">检测到结论性表述：${hit.join("、")}。请删除后再使用。</div>`); } }) || "";
-  };
-  $("#cp").onclick = e => copy(last, e.target);
-}
-
-/* --- 知识库 --- */
-const PI = [/(?<!\d)\d{17}[\dXx](?!\d)/, /(?<!\d)1[3-9]\d{9}(?!\d)/, /(?<!\d)(?:\d[ -]?){15,18}\d(?!\d)/];
-function kbView() {
-  app.innerHTML = `<h1>本行知识库</h1><p class="lede">制度问答和话术助手只依据这里的文档作答。演示版保存在你的浏览器里；正式版保存在行内服务器，并按部门和岗位设置可见范围。</p>
-  <div class="cols"><section style="display:flex;flex-direction:column;gap:10px" id="docs"></section>
-  <section class="panel"><h2>添加文档</h2><label class="field">文档名称<input type="text" id="dt" placeholder="例如：个人贷款管理办法（示例）"></label>
-    <label class="field">正文<textarea id="db" placeholder="粘贴制度条文。添加前会自动扫描证件号、手机号和卡号。"></textarea></label>
-    <div class="acts"><button class="btn primary" type="button" id="add">添加</button><button class="btn ghost" type="button" id="reset">恢复示例文档</button></div><div id="msg"></div></section></div>`;
-  const draw = () => {
-    $("#docs").innerHTML = S.docs.length ? S.docs.map(d => `<article class="doc"><div class="ph"><h2>${esc(d.title)}</h2><button class="btn ghost" type="button" data-del="${d.id}">下线</button></div><pre>${esc(d.body)}</pre></article>`).join("") : '<div class="doc small">知识库是空的。在右侧添加第一份文档。</div>';
-    $$("[data-del]").forEach(b => b.onclick = () => { const d = S.docs.find(x => x.id === b.dataset.del); S.docs = S.docs.filter(x => x !== d); saveDocs(); audit("知识库", "下线文档", d.title); draw(); });
-  };
-  draw();
-  $("#add").onclick = () => {
-    const t = $("#dt").value.trim(), b = $("#db").value.trim();
-    if (!t || !b) { $("#msg").innerHTML = '<div class="alert warn">请填写文档名称和正文。</div>'; return; }
-    if (PI.some(r => r.test(b))) { $("#msg").innerHTML = '<div class="alert bad">已拦截：正文中有疑似证件号、手机号或卡号。请先用脱敏助手处理。</div>'; audit("知识库", "拦截上传", t); return; }
-    S.docs.push({ id: "u" + Date.now(), title: t, body: b }); saveDocs(); audit("知识库", "添加文档", t);
-    $("#dt").value = ""; $("#db").value = ""; $("#msg").innerHTML = '<div class="alert good">已添加，制度问答马上可以用。</div>'; draw();
-  };
-  $("#reset").onclick = () => { S.docs = DEFAULT_DOCS.map(d => ({ ...d })); saveDocs(); draw(); $("#msg").innerHTML = '<div class="alert good">已恢复示例文档。</div>'; };
-}
-
-/* --- 管理端 --- */
-const POS = [["客户经理", "32 人"], ["柜员", "28 人"], ["大堂经理", "14 人"], ["授信岗", "9 人"], ["综合岗", "21 人"]];
-function admin() {
-  app.innerHTML = `<h1>管理端</h1><p class="lede">按岗位开通智能体、查看使用情况和审计日志。顶部数字是试点示例；审计日志记录的是你本次演示的真实操作。</p>
-  <div class="kpis"><div class="kpi"><span>近 30 天调用</span><b>3,097 次</b></div><div class="kpi"><span>活跃员工</span><b>86 / 104</b></div><div class="kpi"><span>估算节省</span><b>806 小时</b></div><div class="kpi"><span>拦截外发敏感信息</span><b style="color:var(--seal)">37 次</b></div></div>
-  <section class="panel" style="margin-top:18px"><div class="ph"><h2>按岗位开通</h2><span class="small">点击单元格开通或关闭；关闭后货架上显示“需管理员开通”。高敏感智能体正式版需科技部与合规部双人审批。</span></div>
-    <div class="scroll"><table class="t" style="min-width:720px"><thead><tr><th>岗位</th>${LIVE.map(a => `<th style="text-align:center">${a.name.replace(/与.*$|助手$/, "")}<span class="lv-${a.lvl}" style="display:block;font-size:11px">敏感度${a.lvl}</span></th>`).join("")}</tr></thead>
-    <tbody>${POS.map(([p, n]) => `<tr><th scope="row" style="color:var(--ink);font-size:14px">${p}<span class="small" style="display:block">${n}</span></th>${LIVE.map(a => { const fit = a.roles.includes(p); return `<td style="text-align:center">${fit ? `<button type="button" class="cell ${S.enabled[a.id] ? "on" : "off"}" data-ag="${a.id}">${S.enabled[a.id] ? "已开通" : "未开通"}</button>` : '<span class="cell off" style="cursor:default">不适用</span>'}</td>`; }).join("")}</tr>`).join("")}</tbody></table></div></section>
-  <section class="panel" style="margin-top:18px"><div class="ph"><h2>审计日志（本次演示）</h2><span class="small">只可追加，不可修改</span></div>
-    <div class="scroll"><table class="t" style="min-width:640px"><thead><tr><th>时间</th><th>员工</th><th>智能体</th><th>操作</th><th>摘要</th></tr></thead><tbody>
-    ${S.log.length ? S.log.map(l => `<tr><td class="num" style="text-align:left">${l.t}</td><td>演示员工</td><td>${esc(l.agent)}</td><td>${esc(l.action)}</td><td>${esc(l.detail)}</td></tr>`).join("") : '<tr><td colspan="5" class="small">还没有操作记录。去货架试用任一智能体，记录会出现在这里。</td></tr>'}
-    </tbody></table></div></section>`;
-  $$("[data-ag]").forEach(b => b.onclick = () => { const id = b.dataset.ag; S.enabled[id] = !S.enabled[id]; store.set("enabled", S.enabled); audit("管理端", S.enabled[id] ? "开通" : "关闭", AGENTS.find(a => a.id === id).name); admin(); });
-}
-
-route();
-})();
-</script>
+<div id="root"><div class="boot">正在加载智能体超市…</div></div>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script type="module" src="./scene.js"></script>
+<script type="module" src="./app.js"></script>
 </body>
 </html>

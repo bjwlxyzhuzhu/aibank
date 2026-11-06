@@ -11,6 +11,7 @@ const fsp = fs.promises;
 const path = require("path");
 const crypto = require("crypto");
 const { AGENTS, KB } = require("./agents");
+const { crawl, ruleTags, TAG_SYSTEM, parseTagJSON } = require("./kb");
 
 const PORT = Number(process.env.PORT || 8080);
 const ROOT = __dirname;
@@ -78,11 +79,22 @@ function readBody(req, limit = 200e3) {
 function isAdmin(req) { const t = getCookie(req, "aibank_admin"); const exp = t && sessions.get(t); if (!exp || exp < Date.now()) { if (t) sessions.delete(t); return false; } sessions.set(t, Date.now() + SESSION_MS); return true; }
 
 /* ---------- 静态文件（白名单） ---------- */
+const JS = "text/javascript; charset=utf-8";
 const STATIC = {
   "/": ["index.html", "text/html; charset=utf-8"],
   "/index.html": ["index.html", "text/html; charset=utf-8"],
   "/admin": ["admin.html", "text/html; charset=utf-8"],
-  "/admin.html": ["admin.html", "text/html; charset=utf-8"]
+  "/admin.html": ["admin.html", "text/html; charset=utf-8"],
+  "/app.js": ["app.js", JS],
+  "/scene.js": ["scene.js", JS],
+  /* 前端依赖由 npm 安装，从 node_modules 提供，不依赖外网 CDN */
+  "/vendor/react.js": ["node_modules/react/umd/react.production.min.js", JS],
+  "/vendor/react-dom.js": ["node_modules/react-dom/umd/react-dom.production.min.js", JS],
+  "/vendor/htm.js": ["node_modules/htm/dist/htm.module.js", JS],
+  "/vendor/three.js": ["node_modules/three/build/three.module.min.js", JS],
+  "/vendor/pdf.mjs": ["node_modules/pdfjs-dist/build/pdf.min.mjs", JS],
+  "/vendor/pdf.worker.mjs": ["node_modules/pdfjs-dist/build/pdf.worker.min.mjs", JS],
+  "/vendor/mammoth.js": ["node_modules/mammoth/mammoth.browser.min.js", JS]
 };
 
 /* ---------- 模型调用 ---------- */
@@ -94,7 +106,7 @@ async function runAgent(req, res) {
   if (daily.count >= config.dailyLimit) return sendJSON(res, 429, { error: "今天的演示次数已用完，请联系管理员。" });
   const p = active();
   if (!p.apiKey) return sendJSON(res, 503, { error: "模型还没有配置：请管理员在后台填写 API Key。" });
-  let body; try { body = await readBody(req, 120e3); } catch (e) { return sendJSON(res, e.code || 400, { error: e.message }); }
+  let body; try { body = await readBody(req, 200e3); } catch (e) { return sendJSON(res, e.code || 400, { error: e.message }); }
   const agent = AGENTS[body && body.agent];
   if (!agent) return sendJSON(res, 400, { error: "没有这个智能体" });
   let built; try { built = agent.build(body.input || {}); } catch (e) { return sendJSON(res, 400, { error: e.message }); }
@@ -121,6 +133,33 @@ async function runAgent(req, res) {
     }
     send({ done: true }); res.end();
   } catch (e) { if (!ac.signal.aborted) { console.error("[aibank]", e.message); send({ error: "连接模型服务失败，请稍后再试。" }); } res.end(); }
+}
+
+/* ---------- 知识库：抓取网址、自动打标签 ---------- */
+async function kbFetch(req, res) {
+  if (limited("crawl:" + clientIp(req), 10, 60e3)) return sendJSON(res, 429, { error: "抓取太频繁了，请稍等一分钟。" });
+  const b = await readBody(req, 4e3);
+  let url = String(b.url || "").trim(); if (!url) return sendJSON(res, 400, { error: "请输入网址" });
+  if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+  try { new URL(url); } catch { return sendJSON(res, 400, { error: "网址格式不对" }); }
+  try { return sendJSON(res, 200, { pages: await crawl(url, b.pages) }); }
+  catch (e) { return sendJSON(res, 422, { error: e.message }); }
+}
+async function kbTag(req, res) {
+  const b = await readBody(req, 60e3);
+  const title = String(b.title || "").slice(0, 120), text = String(b.text || "").slice(0, 6000);
+  if (!text.trim()) return sendJSON(res, 400, { error: "文档没有正文" });
+  const rule = ruleTags(title, text);
+  const p = active();
+  if (!p.apiKey || limited("tag:" + clientIp(req), 30, 60e3)) return sendJSON(res, 200, Object.assign({ source: "rule" }, rule));
+  try {
+    const r = await fetch(apiBase(config.provider, p.baseUrl) + "/chat/completions", { method: "POST", signal: AbortSignal.timeout(25000), headers: { "Content-Type": "application/json", Authorization: "Bearer " + p.apiKey },
+      body: JSON.stringify({ model: p.model || "deepseek-chat", temperature: 0, max_tokens: 200, messages: [{ role: "system", content: TAG_SYSTEM }, { role: "user", content: `文档标题：${title}\n\n正文（节选）：\n${text.slice(0, 3000)}` }] }) });
+    const j = await r.json().catch(() => ({}));
+    const ai = r.ok && parseTagJSON(j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content);
+    if (ai) return sendJSON(res, 200, Object.assign({ source: "ai" }, ai));
+  } catch (e) { console.error("[aibank] tag", e.message); }
+  return sendJSON(res, 200, Object.assign({ source: "rule" }, rule));
 }
 
 /* ---------- 管理接口 ---------- */
@@ -187,12 +226,14 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === "/api/status" && req.method === "GET") { const p = active(); return sendJSON(res, 200, { ready: !!p.apiKey, provider: PROVIDERS[config.provider].label, model: p.model }); }
     if (url.pathname === "/api/kb" && req.method === "GET") return sendJSON(res, 200, { docs: KB });
     if (url.pathname === "/api/run" && req.method === "POST") return await runAgent(req, res);
+    if (url.pathname === "/api/kb/fetch" && req.method === "POST") return await kbFetch(req, res);
+    if (url.pathname === "/api/kb/tag" && req.method === "POST") return await kbTag(req, res);
     if (url.pathname.startsWith("/api/admin/")) return await admin(req, res, url);
     if (url.pathname.startsWith("/api/")) return sendJSON(res, 404, { error: "接口不存在" });
     const hit = STATIC[url.pathname];
     if (hit && (req.method === "GET" || req.method === "HEAD")) {
       const data = await fsp.readFile(path.join(ROOT, hit[0]));
-      res.writeHead(200, { "Content-Type": hit[1], "Cache-Control": hit[0].endsWith(".html") ? "no-cache" : "public, max-age=300" });
+      res.writeHead(200, { "Content-Type": hit[1], "Cache-Control": hit[0].endsWith(".html") || !hit[0].startsWith("node_modules") ? "no-cache" : "public, max-age=86400" });
       return res.end(req.method === "HEAD" ? undefined : data);
     }
     res.writeHead(302, { Location: "/" }); res.end();
