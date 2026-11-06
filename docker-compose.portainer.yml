@@ -1,0 +1,12 @@
+services:
+  aibank:
+    image: ghcr.io/bjwlxyzhuzhu/aibank:latest
+    container_name: aibank
+    restart: unless-stopped
+    ports:
+      - "8090:80"
+    volumes:
+      - /opt/aibank:/data
+    environment:
+      TZ: Asia/Shanghai
+      # ADMIN_PASSWORD: 在 Portainer 里填写；留空则首次启动随机生成，见 /opt/aibank/admin-initial-password.txt

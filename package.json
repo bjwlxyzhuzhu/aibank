@@ -1,0 +1,9 @@
+{
+  "name": "aibank",
+  "version": "1.0.0",
+  "private": true,
+  "description": "银行智能体超市 · 培训演示版",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=20" }
+}

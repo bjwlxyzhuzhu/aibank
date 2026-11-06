@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>后台设置 · 银行智能体超市</title>
+<style>
+:root{--bg:#EEF1EF;--paper:#fff;--ink:#13293D;--muted:#4A5F6B;--line:#C9D3D1;--green:#1F6E5A;--seal:#8E2B1F;--sans:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6}
+header{background:var(--ink);color:#EEF1EF;padding:14px max(16px,env(safe-area-inset-left))}
+header b{font-size:18px}header a{color:#9FB3BD;margin-left:14px;font-size:14px}
+main{max-width:720px;margin:0 auto;padding:28px 16px 48px;display:flex;flex-direction:column;gap:18px}
+section{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:12px}
+h2{margin:0;font-size:17px}label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+input,select,textarea{font:inherit;color:var(--ink);border:1px solid #B8C4C1;border-radius:4px;padding:9px 12px;width:100%;background:#fff}
+textarea{min-height:80px}
+button{font:inherit;border-radius:4px;padding:8px 18px;cursor:pointer;border:1px solid #B8C4C1;background:#fff;color:var(--ink)}
+button.primary{background:var(--green);border-color:var(--green);color:#fff}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.small{font-size:13px;color:var(--muted)}
+.msg{font-size:14px;padding:8px 12px;border-radius:4px}.ok{background:#E3EFEA;color:#17543F}.bad{background:#F6E1DD;color:var(--seal)}
+</style>
+</head>
+<body>
+<header><b>银行智能体超市 · 后台设置</b><a href="./">返回演示</a></header>
+<main>
+  <section id="login"><h2>管理员登录</h2>
+    <label>密码<input type="password" id="pw" autocomplete="current-password"></label>
+    <div class="row"><button class="primary" type="button" id="loginBtn">登录</button><span class="small">初始密码见容器日志或数据目录下的 admin-initial-password.txt，也可用环境变量 ADMIN_PASSWORD 指定。</span></div>
+    <div id="loginMsg"></div></section>
+
+  <section id="cfg" hidden><h2>大模型接入</h2>
+    <label>通道<select id="provider"><option value="tokenone">TokenOne 中转站</option><option value="deepseek">DeepSeek 官方</option></select></label>
+    <label>连接串（可选，粘贴 TokenOne 的 newapi_channel_conn JSON，自动填入地址和 Key）<textarea id="conn" placeholder='{"_type":"newapi_channel_conn","key":"sk-…","url":"https://token.agentone.work"}'></textarea></label>
+    <label>接口地址<input type="text" id="baseUrl"></label>
+    <label>API Key（留空表示不修改；当前：<span id="keyNow">未设置</span>）<input type="password" id="apiKey" autocomplete="off" placeholder="sk-…"></label>
+    <label>模型名称<input type="text" id="model" placeholder="deepseek-chat"></label>
+    <label>每日调用上限<input type="number" id="daily" min="1"></label>
+    <div class="row"><button class="primary" type="button" id="saveBtn">保存并启用</button><button type="button" id="testBtn">测试连接</button><button type="button" id="clearBtn">清除该通道 Key</button></div>
+    <div id="cfgMsg"></div></section>
+
+  <section id="pwd" hidden><h2>修改管理员密码</h2>
+    <label>原密码<input type="password" id="old" autocomplete="current-password"></label>
+    <label>新密码（至少 8 位）<input type="password" id="new" autocomplete="new-password"></label>
+    <div class="row"><button type="button" id="pwdBtn">修改密码</button></div><div id="pwdMsg"></div></section>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+let data = null;
+const show = (el, ok, t) => { el.className = "msg " + (ok ? "ok" : "bad"); el.textContent = t; };
+async function api(url, opt = {}) { const r = await fetch(url, Object.assign({ headers: { "Content-Type": "application/json" } }, opt)); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || "请求失败"); return j; }
+function fill() { const p = data.providers[$("#provider").value]; $("#baseUrl").value = p.baseUrl; $("#model").value = p.model; $("#keyNow").textContent = p.hasKey ? p.key : "未设置"; $("#apiKey").value = ""; }
+async function loadCfg() { data = await api("api/admin/config"); $("#login").hidden = true; $("#cfg").hidden = false; $("#pwd").hidden = false; $("#provider").value = data.provider; $("#daily").value = data.dailyLimit; fill(); }
+$("#provider").onchange = fill;
+$("#loginBtn").onclick = async () => { try { await api("api/admin/login", { method: "POST", body: JSON.stringify({ password: $("#pw").value }) }); await loadCfg(); } catch (e) { show($("#loginMsg"), false, e.message); } };
+$("#pw").onkeydown = e => { if (e.key === "Enter") $("#loginBtn").click(); };
+$("#saveBtn").onclick = async () => { try { await api("api/admin/config", { method: "PUT", body: JSON.stringify({ provider: $("#provider").value, connection: $("#conn").value, baseUrl: $("#baseUrl").value, apiKey: $("#apiKey").value, model: $("#model").value, dailyLimit: $("#daily").value }) }); $("#conn").value = ""; await loadCfg(); show($("#cfgMsg"), true, "已保存并启用"); } catch (e) { show($("#cfgMsg"), false, e.message); } };
+$("#testBtn").onclick = async () => { show($("#cfgMsg"), true, "正在测试…"); try { const j = await api("api/admin/test", { method: "POST" }); show($("#cfgMsg"), true, "连接成功：" + (j.reply || "")); } catch (e) { show($("#cfgMsg"), false, e.message); } };
+$("#clearBtn").onclick = async () => { try { await api("api/admin/config", { method: "PUT", body: JSON.stringify({ provider: $("#provider").value, clearKey: true }) }); await loadCfg(); show($("#cfgMsg"), true, "已清除该通道的 Key"); } catch (e) { show($("#cfgMsg"), false, e.message); } };
+$("#pwdBtn").onclick = async () => { try { await api("api/admin/password", { method: "POST", body: JSON.stringify({ old: $("#old").value, new: $("#new").value }) }); show($("#pwdMsg"), true, "密码已修改"); } catch (e) { show($("#pwdMsg"), false, e.message); } };
+api("api/admin/config").then(r => { data = r; loadCfg(); }).catch(() => {});
+</script>
+</body>
+</html>
