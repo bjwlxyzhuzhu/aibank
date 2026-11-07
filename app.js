@@ -31,18 +31,25 @@ const P = {
   copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
   trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
   eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
-  refresh: '<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>'
+  refresh: '<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>',
+  wealth: '<circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 6.4"/><path d="M12 12H3.5"/>',
+  branch: '<path d="M3 9l1.6-5h14.8L21 9M4 9v11h16V9M3 9h18"/><path d="M9.5 20v-5.5h5V20"/>',
+  prompt: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 9.5l3 2.5-3 2.5M12.5 15H17"/>',
+  star: '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8-4.3-4.1 5.9-.9z"/>'
 };
 const Icon = ({ n, ...p }) => html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ...${p} dangerouslySetInnerHTML=${{ __html: P[n] || "" }}></svg>`;
 
 /* ---------------- 数据 ---------------- */
-const ROLES = ["全部", "客户经理", "柜员", "大堂经理", "授信岗", "综合岗"];
+const ROLES = ["全部", "客户经理", "理财经理", "柜员", "大堂经理", "授信岗", "综合岗"];
 const AGENTS = [
-  { id: "mask", name: "脱敏助手", short: "敏感信息不出行", color: "#3b82f6", lvl: "高", where: "本机处理", roles: ["客户经理", "柜员", "大堂经理", "授信岗", "综合岗"], tags: ["本机脱敏", "一键还原", "对照表不出本机"], saves: "每份材料约省 5 分钟", intro: "把姓名、证件号、卡号、手机号、企业名、地址替换成编号占位符，只把占位符版本交给大模型；拿回结果后用本机对照表一键还原。" },
-  { id: "qa", name: "制度问答助手", short: "有据可依 · 附条款出处", color: "#06b6d4", lvl: "低", where: "知识库检索", roles: ["柜员", "大堂经理", "客户经理", "综合岗"], tags: ["知识库检索", "条款出处", "按标签限定范围"], saves: "每次约省 10 分钟", intro: "先在本行知识库里检索相关条款，再让大模型只依据命中的片段作答，每个回答都附出处；库里没有就直说“未找到依据”。" },
-  { id: "script", name: "话术助手", short: "合规话术 · 违规词拦截", color: "#f59e0b", lvl: "低", where: "行内模型", roles: ["柜员", "大堂经理", "客户经理"], tags: ["两版话术", "违规用语检查", "参考本行制度"], saves: "每次约省 15 分钟", intro: "按产品、场景和客户类型写两版应答话术，自动拦截“保本”“稳赚”等违规用语，老年客户自动提示适当性要求。" },
+  { id: "mask", name: "脱敏助手", short: "敏感信息不出行", color: "#3b82f6", lvl: "高", where: "本机处理", roles: ["客户经理", "理财经理", "柜员", "大堂经理", "授信岗", "综合岗"], tags: ["上传文件脱敏", "导出 Word/TXT", "一键还原", "对照表不出本机"], saves: "每份材料约省 5 分钟", intro: "粘贴材料或上传 Word、PDF、TXT 文件，把姓名、证件号、卡号、手机号、企业名、地址替换成编号占位符，可导出已脱敏的 Word 或 TXT；只把占位符版本交给大模型，拿回结果后用本机对照表一键还原。" },
+  { id: "qa", name: "制度问答助手", short: "有据可依 · 附条款出处", color: "#06b6d4", lvl: "低", where: "知识库检索", roles: ["柜员", "大堂经理", "客户经理", "理财经理", "综合岗"], tags: ["知识库检索", "条款出处", "按标签限定范围"], saves: "每次约省 10 分钟", intro: "先在本行知识库里检索相关条款，再让大模型只依据命中的片段作答，每个回答都附出处；库里没有就直说“未找到依据”。" },
+  { id: "script", name: "话术助手", short: "合规话术 · 违规词拦截", color: "#f59e0b", lvl: "低", where: "行内模型", roles: ["柜员", "大堂经理", "客户经理", "理财经理"], tags: ["两版话术", "违规用语检查", "参考本行制度"], saves: "每次约省 15 分钟", intro: "按产品、场景和客户类型写两版应答话术，自动拦截“保本”“稳赚”等违规用语，老年客户自动提示适当性要求。" },
   { id: "minutes", name: "纪要公文助手", short: "转写 → 规范纪要", color: "#a855f7", lvl: "中", where: "行内模型", roles: ["综合岗", "客户经理"], tags: ["会议纪要", "工作通知", "待办表"], saves: "每次约省 30 分钟", intro: "把录音转写整理成规范的纪要、通知或总结，单列待办事项、责任人和完成时限。" },
   { id: "credit", name: "授信辅助", short: "材料核对 · 报告初稿", color: "#10b981", lvl: "高", where: "本机核对 + 模型", roles: ["客户经理", "授信岗"], tags: ["材料缺项", "报表勾稽", "调查报告初稿"], saves: "每户约省 2 小时", intro: "本机核对材料清单、检查报表平衡与财务比率，再由大模型起草调查报告框架。不给出任何审批结论。" },
+  { id: "wealth", name: "财富配置助手", short: "一户一策 · 配置与挽留", color: "#f5b800", lvl: "中", where: "行内模型", roles: ["理财经理", "客户经理"], tags: ["新客户配置", "回撤安抚挽留", "资产提升冲私行"], saves: "每户约省 1 小时", intro: "录入客户画像和本行在售产品，生成资产配置方案、回撤安抚话术或资产提升路径；超出客户风险等级的产品明确标注“不建议”。" },
+  { id: "branch", name: "厅堂营销助手", short: "低成本 · 场景化营销", color: "#fb7185", lvl: "低", where: "行内模型", roles: ["大堂经理", "理财经理", "客户经理"], tags: ["场景清单", "微宣讲稿", "4周落地计划"], saves: "每份方案约省 3 小时", intro: "输入网点位置、客群、客流、同业和预算，生成场景清单、5 分钟微宣讲稿、外拓与老带新方案、4 周落地计划和考核指标。" },
+  { id: "prompt", name: "提示词助手", short: "说清问题，就有好提示词", color: "#6366f1", lvl: "低", where: "行内模型", roles: ["客户经理", "理财经理", "柜员", "大堂经理", "授信岗", "综合岗"], tags: ["自动归类", "追问缺失信息", "提示词库"], saves: "每次约省 15 分钟", intro: "遇到其他智能体覆盖不了的问题，用大白话描述，生成结构化提示词（角色、背景、任务、合规、输出结构、自检），复制到 DeepSeek 即可出方案。" },
   { id: "contract", name: "合同审查辅助", short: "即将上架", color: "#ec4899", lvl: "中", where: "行内模型", roles: ["授信岗"], tags: ["范本比对"], saves: "每份约省 40 分钟", intro: "比对合同条款与本行范本，列出缺项和改动，供法务复核。", soon: true }
 ];
 const LIVE = AGENTS.filter(a => !a.soon);
@@ -59,7 +66,7 @@ const DEFAULT_DOCS = [
 
 /* ---------------- 全局状态 ---------------- */
 const store = {
-  s: { docs: LS.get("docs", null) || DEFAULT_DOCS, enabled: LS.get("enabled", null) || Object.fromEntries(LIVE.map(a => [a.id, true])), log: [], runs: {}, ai: null, toast: "", kbFilter: null },
+  s: { docs: LS.get("docs", null) || DEFAULT_DOCS, enabled: { ...Object.fromEntries(LIVE.map(a => [a.id, true])), ...LS.get("enabled", {}) }, log: [], runs: {}, ai: null, toast: "", kbFilter: null },
   subs: new Set(),
   set(p) { const prev = this.s; this.s = { ...prev, ...(typeof p === "function" ? p(prev) : p) }; if (this.s.docs !== prev.docs && !LS.set("docs", this.s.docs)) toast("浏览器存储空间不足，部分文档可能无法保存"); if (this.s.enabled !== prev.enabled) LS.set("enabled", this.s.enabled); this.subs.forEach(f => f()); }
 };
@@ -126,6 +133,11 @@ function md(t) {
   if (list) h += "</ul>"; if (table) h += "</table></div>"; return h;
 }
 const Md = ({ text, live, empty }) => text ? html`<div className=${"out" + (live ? " cursor" : "")} dangerouslySetInnerHTML=${{ __html: md(text) }}></div>` : html`<div className="out empty">${empty}</div>`;
+function download(name, text, word) {
+  const body = word ? `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>${esc(name)}</title></head><body style="font-family:SimSun,serif;font-size:12pt;line-height:1.8">${esc(text).split("\n").map(l => `<p style="margin:0 0 6pt">${l || "&nbsp;"}</p>`).join("")}</body></html>` : "\ufeff" + text;
+  const url = URL.createObjectURL(new Blob([body], { type: word ? "application/msword" : "text/plain;charset=utf-8" }));
+  const a = document.createElement("a"); a.href = url; a.download = name + (word ? ".doc" : ".txt"); document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
 async function copyText(t) { try { await navigator.clipboard.writeText(t); toast("已复制"); } catch { toast("复制失败，请手动选择"); } }
 
 /* ---------------- 路由 ---------------- */
@@ -281,7 +293,7 @@ function Shell({ a, R, extra, children }) {
       <div className="stat"><span>本次调用</span><b>${R.stats.n}</b></div>
       <div className="stat"><span>平均用时</span><b>${avg}</b></div>
       <div className="stat"><span>累计输出字数</span><b>${R.stats.chars}</b></div>
-      <div className="stat"><span>${a.id === "mask" ? "识别敏感信息" : a.id === "qa" ? "命中知识片段" : a.id === "credit" ? "本机核对项" : "合规检查"}</span><b>${R.stats.hits}</b></div>
+      <div className="stat"><span>${a.id === "mask" ? "识别敏感信息" : a.id === "qa" ? "命中知识片段" : a.id === "credit" ? "本机核对项" : a.id === "prompt" ? "已生成提示词" : "合规检查"}</span><b>${R.stats.hits}</b></div>
     </div>
     ${children}
   </div>`;
@@ -294,6 +306,10 @@ const MASK_SAMPLE = "客户张建国，身份证号610302198305124417，手机13
 function Mask() {
   const a = AG.mask, R = useRun(a);
   const [src, setSrc] = useState(""); const [res, setRes] = useState(null); const [o, setO] = useOut(); const [back, setBack] = useState(""); const [step, setStep] = useState(0);
+  const [fname, setFname] = useState(""); const [busy, setBusy] = useState(false); const inp = useRef(null);
+  const base = (fname || "材料").replace(/\.[^.]+$/, "");
+  const load = async f => { if (!f) return; setBusy(true); try { const t = clean(await parseFile(f)); setSrc(t); setFname(f.name); setRes(null); setStep(0); setBack(""); R.log(`本机读取文件：${f.name}（${t.length} 字），文件不上传`); audit(a.name, "本机读取文件", f.name); } catch (e) { toast(e.message); } finally { setBusy(false); } };
+  const exp = (text, suffix, word) => { download(`${base}_${suffix}`, text, word); R.log(`导出${suffix}（${word ? "Word" : "TXT"}）`); audit(a.name, "导出" + suffix, word ? "Word" : "TXT"); };
   const doMask = () => { if (!src.trim()) return toast("请先粘贴材料或点“填入示例”"); const r = maskText(src); setRes(r); setStep(1); setBack(""); R.log(`本机脱敏完成，识别 ${r.map.length} 处`); R.setStats(s => ({ ...s, hits: s.hits + r.map.length })); audit(a.name, "本机脱敏", `识别${r.map.length}处`); };
   const send = async () => { audit(a.name, "脱敏文本发送模型", "仅占位符版本"); R.log("只发送占位符版本，原文留在本机"); const t = await R.run({ text: res.masked }, setO, "要点摘要"); if (t) setStep(2); };
   const doBack = () => { setBack(restore(o.text, res.map)); setStep(3); R.log("用本机对照表还原完成"); audit(a.name, "本机还原"); };
@@ -301,10 +317,12 @@ function Mask() {
   return html`<${Shell} a=${a} R=${R} extra=${html`<button className="btn pri" type="button" onClick=${() => { setSrc(MASK_SAMPLE); toast("已填入虚构示例"); }}><${Icon} n="play"/>填入示例</button>`}>
     <div className="steps">${["识别替换|本机完成", "交给模型处理|只发占位符版本", "还原并核对|用对照表换回原文"].map((x, i) => { const [b, s2] = x.split("|"); return html`<span key=${i} className=${step > i ? "done" : ""}><b>${i + 1} ${b}</b>${s2}</span>`; })}</div>
     <div className="grid2" style=${{ gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,340px),1fr))" }}>
-      <section className="panel"><div className="ph"><h2><i><${Icon} n="doc"/></i>原始材料</h2></div>
-        <textarea value=${src} onInput=${e => setSrc(e.target.value)} aria-label="原始材料" placeholder="粘贴含敏感信息的材料（演示请用虚构内容）"></textarea>
+      <section className="panel"><div className="ph"><h2><i><${Icon} n="doc"/></i>原始材料</h2><button className="btn sm" type="button" disabled=${busy} onClick=${() => inp.current.click()}>${busy ? html`<span className="spinner"></span>` : html`<${Icon} n="upload"/>`}上传文件</button>
+          <input ref=${inp} type="file" hidden accept=".pdf,.docx,.txt,.md,.html,.htm,.csv" onChange=${e => { load(e.target.files[0]); e.target.value = ""; }}/></div>
+        ${fname ? html`<div className="small" style=${{ marginBottom: 6 }}>已读取：${fname}（在本机解析，未上传）</div>` : null}
+        <textarea value=${src} onInput=${e => setSrc(e.target.value)} aria-label="原始材料" placeholder="粘贴含敏感信息的材料，或上传 Word、PDF、TXT 文件（演示请用虚构内容）"></textarea>
         <div className="acts" style=${{ marginTop: 10 }}><button className="btn pri" type="button" onClick=${doMask}>本机脱敏</button><span className="small">原文不上传</span></div></section>
-      <section className="panel"><div className="ph"><h2><i><${Icon} n="mask"/></i>可外发版本</h2><button className="btn sm" type="button" disabled=${!res} onClick=${() => copyText(res.masked)}><${Icon} n="copy"/>复制</button></div>
+      <section className="panel"><div className="ph"><h2><i><${Icon} n="mask"/></i>可外发版本</h2><div className="acts"><button className="btn sm" type="button" disabled=${!res} onClick=${() => copyText(res.masked)}><${Icon} n="copy"/>复制</button><button className="btn sm" type="button" disabled=${!res} onClick=${() => exp(res.masked, "已脱敏", true)}>导出 Word</button><button className="btn sm" type="button" disabled=${!res} onClick=${() => exp(res.masked, "已脱敏", false)}>导出 TXT</button></div></div>
         ${res ? html`<div className="out" dangerouslySetInnerHTML=${{ __html: esc(res.masked).replace(/\[[一-龥]+\d+\]/g, x => `<span class="ph-tag">${x}</span>`) }}></div>` : html`<div className="out empty">点“本机脱敏”后，可以外发的版本显示在这里。</div>`}
         <div className="ph" style=${{ marginTop: 14 }}><h2>模型返回的摘要</h2><button className="btn pri sm" type="button" disabled=${!res || R.st === "run"} onClick=${send}>${R.st === "run" ? html`<span className="spinner"></span>` : null}发给模型</button></div>
         <${OutBox} o=${o} empty="模型只会看到占位符版本。"/></section>
@@ -313,7 +331,9 @@ function Mask() {
           ${res && res.map.length ? res.map.map(r => html`<tr key=${r.ph}><td style=${{ color: "#67e8f9", whiteSpace: "nowrap" }}>${r.ph}</td><td>${r.val}</td></tr>`) : html`<tr><td colSpan="2" className="small">${res ? "对照表为空。" : "脱敏后显示。"}</td></tr>`}
         </tbody></table></div>
         <div className="acts" style=${{ margin: "12px 0" }}><button className="btn pri" type="button" disabled=${!o.text || !res || !res.map.length} onClick=${doBack}>还原摘要</button><button className="btn danger" type="button" onClick=${clear}>用完清除对照表</button></div>
-        <${Md} text=${back} empty="还原后的结果显示在这里。"/></section>
+        <${Md} text=${back} empty="还原后的结果显示在这里。"/>
+        ${back ? html`<div className="acts" style=${{ marginTop: 10 }}><button className="btn sm" type="button" onClick=${() => exp(back, "还原结果", true)}>导出 Word</button><button className="btn sm" type="button" onClick=${() => exp(back, "还原结果", false)}>导出 TXT</button><span className="small">含真实信息，仅在本机保存</span></div>` : null}
+        <p className="small" style=${{ marginTop: 10 }}>对照表只在本机内存中，不提供导出，关闭页面即消失。</p></section>
     </div></${Shell}>`;
 }
 
@@ -369,7 +389,7 @@ function Script() {
   return html`<${Shell} a=${a} R=${R} extra=${html`<button className="btn pri" type="button" onClick=${() => setF({ ...f, product: "理财产品", customer: "老年客户", extra: "跟客户强调这款产品保本，收益最高，稳赚不赔" })}><${Icon} n="play"/>填入违规示例</button>`}>
     <div className="grid2">
       <section className="panel"><div className="ph"><h2><i><${Icon} n="script"/></i>场景设置</h2></div>
-        <div className="fields">${sel("product", ["大额存单", "理财产品", "信用卡", "手机银行", "个人消费贷款"], "产品")}${sel("scene", ["柜面咨询", "电话回访", "厅堂营销", "客户投诉安抚", "朋友圈文案"], "场景")}${sel("customer", ["老年客户", "年轻上班族", "小微企业主", "新客户"], "客户类型")}${sel("tone", ["亲切耐心", "专业简洁"], "语气")}</div>
+        <div className="fields">${sel("product", ["大额存单", "理财产品", "信用卡", "手机银行", "个人消费贷款"], "产品")}${sel("scene", ["柜面咨询", "电话回访", "厅堂营销", "客户投诉安抚", "净值回撤安抚", "朋友圈文案"], "场景")}${sel("customer", ["老年客户", "年轻上班族", "小微企业主", "新客户"], "客户类型")}${sel("tone", ["亲切耐心", "专业简洁"], "语气")}</div>
         <label className="field" style=${{ marginTop: 10 }}>补充要求<textarea style=${{ minHeight: 100 }} value=${f.extra} onInput=${set("extra")} placeholder="例如：重点介绍起存金额和提前支取规则"></textarea></label>
         ${bad.length ? html`<div className="alert bad" style=${{ marginTop: 10 }}>补充要求中有违规用语：${bad.map(w => html`<mark key=${w} className="bad">${w}</mark> `)}生成时会按规定改写。</div>` : null}
         <div className="acts" style=${{ marginTop: 12 }}><button className="btn pri" type="button" disabled=${R.st === "run"} onClick=${gen}>${R.st === "run" ? html`<span className="spinner"></span>` : null}生成话术</button></div></section>
@@ -439,6 +459,114 @@ function Credit() {
         <${OutBox} o=${o} empty="核对后可生成初稿。"/>
         ${verdict.length ? html`<div className="alert bad" style=${{ marginTop: 8 }}>检测到结论性表述：${verdict.join("、")}。请删除后再使用。</div>` : null}
         <p className="small" style=${{ borderTop: "1px dashed rgba(251,113,133,.4)", paddingTop: 8, color: "#fecdd3" }}>本智能体只整理材料、起草初稿，不给出是否同意授信、评级或额度建议。结论由客户经理和审查岗作出。</p></section>
+    </div></${Shell}>`;
+}
+
+/* 输出里的承诺性表述检查：否定语境（不得、不能、并非……）中出现的不算 */
+const STRONG = ["保本保息", "保证收益", "稳赚", "包赚", "肯定赚", "零风险", "无风险", "绝对安全", "刚性兑付", "保本高收益"];
+const riskyClaims = t => { const hit = new Set(); String(t).split(/[。！？\n]/).forEach(sn => STRONG.forEach(w => { const i = sn.indexOf(w); if (i >= 0 && !/不|没有|并非|禁止|切勿|勿|别|严禁|避免|非|谈|说成|误/.test(sn.slice(Math.max(0, i - 14), i))) hit.add(w); })); return [...hit]; };
+const Seg = ({ items, value, set }) => html`<div className="seg" role="tablist">${items.map(([k, l]) => html`<button key=${k} type="button" role="tab" aria-selected=${value === k} className=${value === k ? "on" : ""} onClick=${() => set(k)}>${l}</button>`)}</div>`;
+const PiiBtn = ({ text, set }) => PII.some(r => r.test(text)) ? html`<button className="btn sm danger" type="button" onClick=${() => { const m = maskText(text); set(m.masked); toast(`已脱敏 ${m.map.length} 处`); }}>发现敏感信息 · 自动脱敏</button>` : html`<span className="chip g">未发现证件号/手机号/卡号</span>`;
+
+/* --- 财富配置助手 --- */
+const WEALTH_MODES = [["配置", "新客户资产配置"], ["挽留", "回撤安抚挽留"], ["提升", "资产提升冲私行"]];
+const PRODUCTS = "1. 现金管理类理财（R1，随存随取）\n2. 定期存款（1/2/3年，利率高于国有大行挂牌）\n3. 大额存单（20万元起，1个月至3年）\n4. 结构性存款（保本浮动收益，3—12个月）\n5. 二级风险（R2）固收理财（1万元起）\n6. 偏债基金 / 固收+基金（R2—R3）\n7. 年金险、增额终身寿（保险，不是存款）\n8. 贵金属（积存金、实物金）\n9. 信托（仅限合格投资者，R3及以上）\n利率与业绩比较基准以本行当期公告为准。";
+const W_SAMPLES = {
+  配置: "零售客户，男，55岁，已婚，企业高管，孩子在上学。在我行金融资产300万元，他行另有部分资金（金额待了解）。对银行资产风险厌恶，但希望收益高、风险低。风险测评：稳健型。",
+  挽留: "中老年普通储蓄理财客户，风险等级R2稳健型。持有的固收理财近期小幅连续亏损（示例：本金50万元，买入以来累计收益+0.8万元，近一个月浮亏0.6万元）。只看账面盈亏，一亏钱就焦虑；情绪烦躁、不信任，扬言全部取走、不再买理财，只想去四大行存定期。认为银行理财稳赚不赔，亏钱就是被忽悠。账户另有活期约30万元长期闲置。厅堂没有礼品支持。",
+  提升: "R2稳健型中老年客户，情绪已经稳住。本行资产约80万元（理财50万元、活期30万元）。配偶在他行有定期约60万元，明年3月到期；子女已工作。希望逐步把家庭资产归集到我行，达到私行客户标准（以本行私行门槛为准）。没有礼品支持，可以用服务权益。"
+};
+function Wealth() {
+  const a = AG.wealth, R = useRun(a), s = useStore();
+  const [mode, setMode] = useState("配置"); const [profile, setProfile] = useState(""); const [products, setProducts] = useState(PRODUCTS); const [o, setO] = useOut(); const [chk, setChk] = useState(null);
+  const gen = async () => {
+    if (!profile.trim()) return toast("请先填写客户情况或点“填入示例”");
+    if (PII.some(r => r.test(profile))) return toast("客户情况里有疑似证件号、手机号或卡号，请先自动脱敏");
+    const h = retrieve(`理财 风险 适当性 销售 存款 ${profile.slice(0, 300)}`, s.docs, 6, 4000); R.log(`参考本行制度 ${h.length} 段`);
+    audit(a.name, "生成方案", WEALTH_MODES.find(m => m[0] === mode)[1]); setChk(null);
+    const t = await R.run({ mode, profile, products, docs: h.length ? asDocs(h) : undefined }, setO, WEALTH_MODES.find(m => m[0] === mode)[1]);
+    if (t) { const hb = riskyClaims(t); setChk(hb); R.setStats(x => ({ ...x, hits: x.hits + 1 })); R.log(hb.length ? "合规检查：出现 " + hb.join("、") : "合规检查通过"); }
+  };
+  return html`<${Shell} a=${a} R=${R} extra=${html`<button className="btn pri" type="button" onClick=${() => { setProfile(W_SAMPLES[mode]); toast("已填入示例：" + WEALTH_MODES.find(m => m[0] === mode)[1]); }}><${Icon} n="play"/>填入示例</button>`}>
+    <${Seg} items=${WEALTH_MODES} value=${mode} set=${k => { setMode(k); setO("", false); setChk(null); }}/>
+    <div className="grid2">
+      <section className="panel"><div className="ph"><h2><i><${Icon} n="wealth"/></i>客户情况</h2><${PiiBtn} text=${profile} set=${setProfile}/></div>
+        <textarea style=${{ minHeight: 180 }} value=${profile} onInput=${e => setProfile(e.target.value)} placeholder="年龄、职业、家庭、在本行和他行的资产、风险等级、持仓与盈亏、诉求和情绪（请用虚构或已脱敏的信息）" aria-label="客户情况"></textarea>
+        <label className="field" style=${{ marginTop: 10 }}>本行可用产品（按当期在售修改）<textarea style=${{ minHeight: 160 }} value=${products} onInput=${e => setProducts(e.target.value)}></textarea></label>
+        <div className="acts" style=${{ marginTop: 12 }}><button className="btn pri" type="button" disabled=${R.st === "run"} onClick=${gen}>${R.st === "run" ? html`<span className="spinner"></span>` : null}生成方案</button><span className="small">方案供理财经理参考，须经风险测评与适当性匹配</span></div></section>
+      <section className="panel"><div className="ph"><h2>${WEALTH_MODES.find(m => m[0] === mode)[1]}方案</h2><button className="btn sm" type="button" disabled=${!o.text} onClick=${() => copyText(o.text)}><${Icon} n="copy"/>复制</button></div>
+        <${OutBox} o=${o} empty="选择场景、填写客户情况后生成。"/>
+        ${chk ? html`<div className=${"alert " + (chk.length ? "bad" : "good")} style=${{ marginTop: 10 }}>${chk.length ? "方案中出现承诺性表述：" + chk.join("、") + "，请修改后再用。" : "合规检查通过：没有发现承诺保本、保证收益等表述。"}</div>` : null}
+        <p className="small" style=${{ borderTop: "1px dashed rgba(245,184,0,.4)", paddingTop: 8, color: "#fde68a" }}>本方案不构成投资建议。理财不保本，产品须与客户风险等级匹配，销售理财须按规定录音录像；利率与收益以本行当期公告为准。</p></section>
+    </div></${Shell}>`;
+}
+
+/* --- 厅堂营销助手 --- */
+const GOALS = ["长期化场景营销", "拓宽客源、沉淀稳定客群", "提升存款与理财", "代发与公职客群经营", "老客户维护与转介绍"];
+const B_SAMPLES = [
+  ["政务网点：人难约、预算少", "网点紧邻法院、政务单位，客群以公职人员、单位办事人员为主，周边居民小区稀缺，自然客流小。日均客流约30人，多为对公业务、还款、代发工资开卡，主动存款理财意识不强。组织主题活动到场常为固定的5—6人，集中邀约难。公职人员时间紧，坐不住长时间宣讲。机会：政务、公职客群稳定、信誉好。", "拓宽客源、沉淀稳定客群", "礼品预算紧张，优先用服务权益、专属咨询、线上工具替代；希望以厅堂微宣讲、老带新、政务单位外拓为抓手"],
+  ["远离居民区：同业密集", "网点距周边居民区较远（大于3公里），附近有中行、建行、工行、长安银行、西安银行、招商银行、恒丰银行等同业。存款利率高于国有大行，低于本地城商行。", "长期化场景营销", "以厅堂为阵地，要求实用、接地气、费用少、效果好"]
+];
+function Branch() {
+  const a = AG.branch, R = useRun(a);
+  const [site, setSite] = useState(""); const [goal, setGoal] = useState(GOALS[0]); const [limits, setLimits] = useState(""); const [o, setO] = useOut(); const [chk, setChk] = useState(null);
+  const gen = async () => {
+    if (!site.trim()) return toast("请先填写网点情况或点示例");
+    audit(a.name, "生成营销方案", goal); setChk(null); R.log("目标：" + goal);
+    const t = await R.run({ site, goal, limits }, setO, "厅堂营销方案");
+    if (t) { const hb = riskyClaims(t).concat(/返现|贴息|赠送.{0,8}利息|送.{0,6}换存款/.test(t) ? ["疑似变相揽存"] : []); setChk(hb); R.setStats(x => ({ ...x, hits: x.hits + 1 })); R.log(hb.length ? "合规检查：" + hb.join("、") : "合规检查通过"); }
+  };
+  return html`<${Shell} a=${a} R=${R} extra=${B_SAMPLES.map(([l, s1, g, lim]) => html`<button key=${l} className="btn pri" type="button" onClick=${() => { setSite(s1); setGoal(g); setLimits(lim); toast("已填入示例：" + l); }}><${Icon} n="play"/>${l}</button>`)}>
+    <div className="grid2">
+      <section className="panel"><div className="ph"><h2><i><${Icon} n="branch"/></i>网点情况</h2></div>
+        <textarea style=${{ minHeight: 200 }} value=${site} onInput=${e => setSite(e.target.value)} placeholder="位置与周边、主要客群、日均客流与业务、同业竞争、利率优劣势、以往活动效果" aria-label="网点情况"></textarea>
+        <div className="fields" style=${{ marginTop: 10 }}><label className="field">主要目标<select value=${goal} onChange=${e => setGoal(e.target.value)}>${GOALS.map(x => html`<option key=${x}>${x}</option>`)}</select></label></div>
+        <label className="field" style=${{ marginTop: 10 }}>限制条件（预算、人手、要求）<textarea style=${{ minHeight: 80 }} value=${limits} onInput=${e => setLimits(e.target.value)} placeholder="例如：礼品预算紧张；只有2名员工能做活动"></textarea></label>
+        <div className="acts" style=${{ marginTop: 12 }}><button className="btn pri" type="button" disabled=${R.st === "run"} onClick=${gen}>${R.st === "run" ? html`<span className="spinner"></span>` : null}生成营销方案</button></div></section>
+      <section className="panel"><div className="ph"><h2>营销方案</h2><button className="btn sm" type="button" disabled=${!o.text} onClick=${() => copyText(o.text)}><${Icon} n="copy"/>复制</button></div>
+        <${OutBox} o=${o} empty="生成场景清单、微宣讲稿、外拓与老带新方案、4 周计划和考核指标。"/>
+        ${chk ? html`<div className=${"alert " + (chk.length ? "bad" : "good")} style=${{ marginTop: 10 }}>${chk.length ? "请注意：" + chk.join("、") + "。礼品不能变相提高利率揽存。" : "合规检查通过：没有发现承诺收益或变相揽存的表述。"}</div>` : null}</section>
+    </div></${Shell}>`;
+}
+
+/* --- 提示词助手 --- */
+const KINDS = ["自动判断", "客户沟通与挽留", "资产配置", "营销活动", "公文写作", "数据分析", "培训课件", "其他"];
+const ROUTES = [["mask", /脱敏|身份证号|敏感信息|隐私/g], ["qa", /制度|规定|能不能|是否可以|条款|管理办法/g], ["script", /话术|怎么说|怎么回答|应答/g], ["minutes", /纪要|会议|通知|公文|工作总结|转写/g], ["credit", /授信|调查报告|财务报表|贷款材料|勾稽/g], ["wealth", /资产配置|配置方案|亏损|回撤|净值|赎回|私行|闲置|他行/g], ["branch", /厅堂|网点|营销活动|获客|邀约|外拓|微宣讲|客流|老带新/g]];
+const routeOf = t => ROUTES.map(([id, re]) => [id, (t.match(re) || []).length]).filter(x => x[1] >= 2).sort((a, b) => b[1] - a[1]);
+const TPL = [
+  { id: "t1", title: "客户挽留与资产配置（模板）", text: "你是银行理财经理的沟通教练，要求合规：不得承诺保本或收益，不贬低同业，产品须匹配客户风险等级。\n客户情况：【客户类型、年龄、风险等级、持有产品及盈亏、情绪和诉求、活期余额、他行资金】\n本行可用产品：【产品名称、风险等级、期限、起购金额、当期利率或业绩比较基准】\n请输出：\n1. 前 5 分钟的安抚话术（先共情，不辩解）\n2. 用大白话解释亏损原因（一个比喻）\n3. 给客户的 2—3 个选择及对应话术（含“转本行定期”的承接方案）\n4. 分账户配置建议（存款打底、理财增值、灵活备用，各放多少）\n5. 吸纳闲置活期和他行到期资金的建议\n6. 后续 3 个月的回访计划", at: "内置" },
+  { id: "t2", title: "厅堂营销方案（模板）", text: "你是银行网点营销顾问，要求：费用低、能长期坚持；不用礼品变相揽存，不贬低同业。\n网点情况：【位置、周边客群、日均客流、主要业务、同业竞争、利率优劣势、营销预算、限制条件】\n请输出：\n1. 适合本网点的 8—10 个场景（做法、目标客群、费用）\n2. 10 个“5 分钟微宣讲”题目，并写出其中 2 个的完整讲稿\n3. 外拓方案（去哪些单位、怎么联系、讲什么）\n4. 老带新机制（不用现金奖励）\n5. 用服务权益代替礼品的清单\n6. 4 周落地计划和考核指标", at: "内置" }
+];
+const splitPrompt = t => { const m = String(t).match(/```[^\n]*\n([\s\S]*?)(```|$)/); if (!m) return { before: t, code: "", after: "" }; const i = t.indexOf(m[0]); return { before: t.slice(0, i), code: m[1].trim(), after: t.slice(i + m[0].length) }; };
+function PromptGen() {
+  const a = AG.prompt, R = useRun(a);
+  const [q, setQ] = useState(""); const [kind, setKind] = useState(KINDS[0]); const [o, setO] = useOut(); const [lib, setLib] = useState(() => LS.get("prompts", null) || TPL);
+  const saveLib = l => { setLib(l); LS.set("prompts", l); };
+  const hits = routeOf(q).filter(([id]) => AG[id] && !AG[id].soon);
+  const parts = splitPrompt(o.text);
+  const gen = async () => {
+    if (!q.trim()) return toast("请先描述你的问题");
+    if (PII.some(r => r.test(q))) return toast("问题里有疑似证件号、手机号或卡号，请先自动脱敏");
+    R.log(hits.length ? "归类参考：可用 " + hits.map(([id]) => AG[id].name).join("、") : "没有对应的专用智能体，生成通用提示词");
+    audit(a.name, "生成提示词", q.slice(0, 30));
+    const t = await R.run({ problem: q, kind }, setO, "结构化提示词");
+    if (t) { const p = splitPrompt(t); const n = (p.code.match(/【待补充/g) || []).length; R.setStats(x => ({ ...x, hits: x.hits + 1 })); R.log(p.code ? `提示词已生成，含 ${n} 处待补充` : "未识别到提示词代码块，请重试"); }
+  };
+  const save = () => { if (!parts.code) return; saveLib([{ id: "p" + Date.now(), title: q.replace(/\s+/g, " ").slice(0, 24) || "未命名提示词", text: parts.code, at: day() }, ...lib].slice(0, 50)); toast("已收藏到提示词库"); audit(a.name, "收藏提示词"); };
+  return html`<${Shell} a=${a} R=${R} extra=${html`<button className="btn pri" type="button" onClick=${() => { setQ("我是网点理财经理。一位客户买的固收理财最近小幅亏损，情绪很大，要把钱全部取走去四大行存定期。厅堂没有礼品支持。我想稳住他的资金，最好还能把他的闲置活期也留下来。帮我出一份应对方案。"); toast("已填入示例"); }}><${Icon} n="play"/>填入示例</button>`}>
+    <div className="grid2" style=${{ gridTemplateColumns: "minmax(0,1.6fr) minmax(280px,1fr)" }}>
+      <section className="panel"><div className="ph"><h2><i><${Icon} n="prompt"/></i>用大白话描述你的问题</h2><${PiiBtn} text=${q} set=${setQ}/></div>
+        <textarea style=${{ minHeight: 150 }} value=${q} onInput=${e => setQ(e.target.value)} placeholder="例如：领导让我准备一场面向退休教师的反诈讲座，30 分钟，要互动，帮我写方案" aria-label="问题描述"></textarea>
+        ${hits.length ? html`<div className="alert warn" style=${{ marginTop: 10 }}>这个问题有现成的智能体：${hits.map(([id]) => html`<a key=${id} href=${"#" + id} style=${{ marginLeft: 6, color: "#fde68a", fontWeight: 600 }}>${AG[id].name} ›</a>`)}　用专用智能体更稳定；也可以继续生成提示词。</div>` : null}
+        <div className="acts" style=${{ marginTop: 12 }}><label className="field" style=${{ flex: "0 0 180px" }}>方向<select value=${kind} onChange=${e => setKind(e.target.value)}>${KINDS.map(x => html`<option key=${x}>${x}</option>`)}</select></label>
+          <button className="btn pri" type="button" style=${{ alignSelf: "flex-end" }} disabled=${R.st === "run"} onClick=${gen}>${R.st === "run" ? html`<span className="spinner"></span>` : null}生成提示词</button></div>
+        <div className="ph" style=${{ marginTop: 16 }}><h2>生成结果</h2><div className="acts"><button className="btn sm" type="button" disabled=${!parts.code} onClick=${() => copyText(parts.code)}><${Icon} n="copy"/>复制提示词</button><button className="btn sm" type="button" disabled=${!parts.code || o.live} onClick=${save}><${Icon} n="star"/>收藏</button></div></div>
+        ${o.text ? html`<div className=${"out" + (o.live ? " cursor" : "")}><div dangerouslySetInnerHTML=${{ __html: md(parts.before) }}></div>${parts.code ? html`<pre className="ptext">${parts.code}</pre>` : null}<div dangerouslySetInnerHTML=${{ __html: md(parts.after) }}></div></div>` : html`<div className="out empty">生成后：先看“需要补充的信息”，把提示词里的【待补充】换成实际情况，再复制到 DeepSeek。</div>`}
+        ${o.err ? html`<div className="alert bad" style=${{ marginTop: 8 }}>${o.err}</div>` : null}</section>
+      <section className="panel"><div className="ph"><h2><i><${Icon} n="star"/></i>提示词库</h2><span className="small">${lib.length} 条</span></div>
+        <p className="small" style=${{ marginTop: -4 }}>好用的提示词收藏在这里。同一类问题反复出现，就值得开发成专用智能体。</p>
+        <div className="hits">${lib.map((p, i) => html`<div key=${p.id} className="hit" style=${{ animationDelay: i * 40 + "ms" }}><div style=${{ display: "flex", justifyContent: "space-between", gap: 6, alignItems: "center" }}><b>${p.title}</b><span style=${{ whiteSpace: "nowrap" }}><button className="btn sm ghost" type="button" title="复制" onClick=${() => copyText(p.text)}><${Icon} n="copy"/></button><button className="btn sm ghost" type="button" title="删除" onClick=${() => saveLib(lib.filter(x => x.id !== p.id))}><${Icon} n="trash"/></button></span></div><p>${p.text}</p><span className="small">${p.at}</span></div>`)}</div>
+        <div className="acts" style=${{ marginTop: 10 }}><button className="btn ghost sm" type="button" onClick=${() => { saveLib(TPL.concat(lib.filter(x => !x.id.startsWith("t")))); toast("已恢复内置模板"); }}>恢复内置模板</button></div></section>
     </div></${Shell}>`;
 }
 
@@ -614,7 +742,7 @@ function Tags({ tags, docs, pick }) {
 }
 
 /* ---------------- 管理端 ---------------- */
-const POS = [["客户经理", "32 人"], ["柜员", "28 人"], ["大堂经理", "14 人"], ["授信岗", "9 人"], ["综合岗", "21 人"]];
+const POS = [["客户经理", "32 人"], ["理财经理", "12 人"], ["柜员", "28 人"], ["大堂经理", "14 人"], ["授信岗", "9 人"], ["综合岗", "21 人"]];
 function Manage() {
   const s = useStore();
   const calls = Object.values(s.runs).reduce((n, r) => n + (r.n || 0), 0);
@@ -638,7 +766,7 @@ function Manage() {
 /* ---------------- 根组件 ---------------- */
 function App() {
   const route = useHash(); const s = useStore();
-  const Page = route === "kb" ? KB : route === "manage" ? Manage : { mask: Mask, qa: QA, script: Script, minutes: Minutes, credit: Credit }[route] || Home;
+  const Page = route === "kb" ? KB : route === "manage" ? Manage : { mask: Mask, qa: QA, script: Script, minutes: Minutes, credit: Credit, wealth: Wealth, branch: Branch, prompt: PromptGen }[route] || Home;
   useEffect(() => { if (AG[route] && !s.enabled[route]) { toast("需要管理员为你的岗位开通"); go("home"); } }, [route]);
   return html`<${React.Fragment}>
     <${Top} route=${route}/>
