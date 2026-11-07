@@ -157,6 +157,11 @@ table.t{width:100%;border-collapse:collapse;font-size:14px}
 .mod .go2{font-size:13px;font-weight:600;color:color-mix(in srgb,var(--ac) 65%,#fff);white-space:nowrap}
 .mod .bar{margin-top:0}
 
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.seg button{border:1px solid var(--line2);background:rgba(8,22,52,.6);color:var(--ink2);padding:7px 16px;border-radius:999px;cursor:pointer;font-size:14px;transition:all .2s}
+.seg button.on{color:#fff;border-color:var(--ac,var(--cyan));background:color-mix(in srgb,var(--ac,var(--cyan)) 22%,transparent);box-shadow:0 0 14px color-mix(in srgb,var(--ac,var(--cyan)) 35%,transparent)}
+.ptext{white-space:pre-wrap;font-family:var(--mono);font-size:13px;line-height:1.65;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.45);border-radius:10px;padding:12px 14px;margin:10px 0;color:#e0e7ff;max-height:520px;overflow:auto}
+
 /* 工作台 */
 .crumb{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);margin-bottom:14px}
 .crumb a{color:var(--ink2);text-decoration:none}.crumb a:hover{color:#fff}
