@@ -35,12 +35,13 @@ const P = {
   wealth: '<circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 6.4"/><path d="M12 12H3.5"/>',
   branch: '<path d="M3 9l1.6-5h14.8L21 9M4 9v11h16V9M3 9h18"/><path d="M9.5 20v-5.5h5V20"/>',
   prompt: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 9.5l3 2.5-3 2.5M12.5 15H17"/>',
+  shield: '<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
   star: '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8-4.3-4.1 5.9-.9z"/>'
 };
 const Icon = ({ n, ...p }) => html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ...${p} dangerouslySetInnerHTML=${{ __html: P[n] || "" }}></svg>`;
 
 /* ---------------- 数据 ---------------- */
-const ROLES = ["全部", "客户经理", "理财经理", "柜员", "大堂经理", "授信岗", "综合岗"];
+const ROLES = ["全部", "客户经理", "理财经理", "柜员", "大堂经理", "授信岗", "消保岗", "综合岗"];
 const AGENTS = [
   { id: "mask", name: "脱敏助手", short: "敏感信息不出行", color: "#3b82f6", lvl: "高", where: "本机处理", roles: ["客户经理", "理财经理", "柜员", "大堂经理", "授信岗", "综合岗"], tags: ["上传文件脱敏", "导出 Word/TXT", "一键还原", "对照表不出本机"], saves: "每份材料约省 5 分钟", intro: "粘贴材料或上传 Word、PDF、TXT 文件，把姓名、证件号、卡号、手机号、企业名、地址替换成编号占位符，可导出已脱敏的 Word 或 TXT；只把占位符版本交给大模型，拿回结果后用本机对照表一键还原。" },
   { id: "qa", name: "制度问答助手", short: "有据可依 · 附条款出处", color: "#06b6d4", lvl: "低", where: "知识库检索", roles: ["柜员", "大堂经理", "客户经理", "理财经理", "综合岗"], tags: ["知识库检索", "条款出处", "按标签限定范围"], saves: "每次约省 10 分钟", intro: "先在本行知识库里检索相关条款，再让大模型只依据命中的片段作答，每个回答都附出处；库里没有就直说“未找到依据”。" },
@@ -49,6 +50,7 @@ const AGENTS = [
   { id: "credit", name: "授信辅助", short: "材料核对 · 报告初稿", color: "#10b981", lvl: "高", where: "本机核对 + 模型", roles: ["客户经理", "授信岗"], tags: ["材料缺项", "报表勾稽", "调查报告初稿"], saves: "每户约省 2 小时", intro: "本机核对材料清单、检查报表平衡与财务比率，再由大模型起草调查报告框架。不给出任何审批结论。" },
   { id: "wealth", name: "财富配置助手", short: "一户一策 · 配置与挽留", color: "#f5b800", lvl: "中", where: "行内模型", roles: ["理财经理", "客户经理"], tags: ["新客户配置", "回撤安抚挽留", "资产提升冲私行"], saves: "每户约省 1 小时", intro: "录入客户画像和本行在售产品，生成资产配置方案、回撤安抚话术或资产提升路径；超出客户风险等级的产品明确标注“不建议”。" },
   { id: "branch", name: "厅堂营销助手", short: "低成本 · 场景化营销", color: "#fb7185", lvl: "低", where: "行内模型", roles: ["大堂经理", "理财经理", "客户经理"], tags: ["场景清单", "微宣讲稿", "4周落地计划"], saves: "每份方案约省 3 小时", intro: "输入网点位置、客群、客流、同业和预算，生成场景清单、5 分钟微宣讲稿、外拓与老带新方案、4 周落地计划和考核指标。" },
+  { id: "consumer", name: "消保审查助手", short: "上线前 · 事前消保审查", color: "#84cc16", lvl: "中", where: "本机初筛 + 模型", roles: ["消保岗", "综合岗", "理财经理", "客户经理", "大堂经理"], tags: ["产品服务制度协议宣传", "八项权利检视", "审查意见书"], saves: "每份约省 2 小时", intro: "新产品、新服务、新业务、新制度、新协议或宣传素材上线前，本机先筛查保本承诺、霸王条款、默认勾选、搭售、个人信息共享等风险点，再由模型逐条出具修改建议和审查意见书初稿。最终以消保部门意见为准。" },
   { id: "prompt", name: "提示词助手", short: "说清问题，就有好提示词", color: "#6366f1", lvl: "低", where: "行内模型", roles: ["客户经理", "理财经理", "柜员", "大堂经理", "授信岗", "综合岗"], tags: ["自动归类", "追问缺失信息", "提示词库"], saves: "每次约省 15 分钟", intro: "遇到其他智能体覆盖不了的问题，用大白话描述，生成结构化提示词（角色、背景、任务、合规、输出结构、自检），复制到 DeepSeek 即可出方案。" },
   { id: "contract", name: "合同审查辅助", short: "即将上架", color: "#ec4899", lvl: "中", where: "行内模型", roles: ["授信岗"], tags: ["范本比对"], saves: "每份约省 40 分钟", intro: "比对合同条款与本行范本，列出缺项和改动，供法务复核。", soon: true }
 ];
@@ -61,7 +63,9 @@ const DEFAULT_DOCS = [
   { id: "d2", title: "理财产品销售管理办法（示例）", category: "制度办法", tags: ["理财", "合规", "消费者保护"], summary: "禁止承诺保本收益，老年客户须风险评估与录音录像。", source: "内置示例", origin: "", at: "2026-11-01", tagSource: "rule",
     body: "第十条 销售人员不得向客户承诺保本或者承诺最低收益，不得使用“稳赚”“无风险”“收益最高”等误导性用语。\n第十一条 向65周岁及以上客户销售理财产品，应当进行风险承受能力评估，并在销售过程中录音录像。\n第十二条 客户风险承受能力评估结果有效期为一年，过期须重新评估。" },
   { id: "d3", title: "柜面服务规范（示例）", category: "制度办法", tags: ["柜面服务", "消费者保护", "信息安全"], summary: "等候超时致歉引导、投诉登记答复时限、离柜锁屏。", source: "内置示例", origin: "", at: "2026-11-01", tagSource: "rule",
-    body: "第六条 客户等候时间超过15分钟的，大堂经理应主动致歉并引导至自助设备或预约服务。\n第七条 客户投诉应当在24小时内登记，5个工作日内答复。\n第八条 柜员离开柜台须退出业务系统并锁屏。" }
+    body: "第六条 客户等候时间超过15分钟的，大堂经理应主动致歉并引导至自助设备或预约服务。\n第七条 客户投诉应当在24小时内登记，5个工作日内答复。\n第八条 柜员离开柜台须退出业务系统并锁屏。" },
+  { id: "d4", title: "消费者权益保护审查工作规程（示例）", category: "制度办法", tags: ["消费者保护", "合规", "宣传"], summary: "新产品、新服务、新协议与宣传素材上线前须经消保审查，审查意见分三类并留痕。", source: "内置示例", origin: "", at: "2026-11-01", tagSource: "rule",
+    body: "第五条 面向消费者的新产品、新服务、新业务、新制度、新协议及宣传素材，应当在上线或发布前提交消费者权益保护部门审查，未经审查不得上线。\n第六条 审查内容包括：信息披露是否充分，收费是否明示，格式条款是否公平，是否存在捆绑搭售或默认勾选，个人信息收集使用是否合规，是否适合目标客群，投诉渠道是否明示。\n第七条 消费者权益保护部门应当在5个工作日内出具审查意见，审查意见分为同意上线、修改后上线、暂缓上线三类；业务部门须逐条反馈采纳情况。\n第八条 审查意见、修改记录及采纳反馈须留存备查，保存期限不少于5年。" }
 ];
 
 /* ---------------- 全局状态 ---------------- */
@@ -529,9 +533,89 @@ function Branch() {
     </div></${Shell}>`;
 }
 
+/* --- 消保审查助手 --- */
+const C_TYPES = [["产品", "新产品"], ["服务", "新服务/新业务"], ["制度", "新制度"], ["协议", "新协议"], ["宣传", "宣传素材"]];
+const C_SAMPLES = {
+  产品: ["银发安享 · 养老理财组合", "60岁以上老年客户", "网点厅堂、手机银行", "产品说明：本组合由R3级混合类理财和3年期定期存款构成，过往收益表现优异，年化可达5.2%。专为老年客户设计，稳健安心，到期保本保息。起购5万元，购买即送米面油大礼包。手机银行购买时默认勾选“到期自动续投”。认购费1%。名额有限，仅限本月。"],
+  服务: ["手机银行 · 极速开户", "新客户、年轻上班族", "手机银行App", "开通手机银行极速开户服务，须同时办理本行信用卡方可使用。注册即视为您已同意《个人信息授权书》，同意本行将您的身份、交易信息共享给合作机构用于营销推广。人脸识别连续失败三次将冻结账户，需本人到网点解冻。"],
+  制度: ["网点客户投诉处理办法（修订稿）", "全部个人客户", "各营业网点", "第三条 客户投诉须提交书面材料，口头投诉不予受理。\n第四条 投诉处理时限为30个工作日。\n第五条 对已在网点协商处理的投诉，客户不得再向监管部门投诉。\n第六条 网点负责人对投诉处理结果有最终解释权。"],
+  协议: ["个人消费贷款合同（线上版）", "个人消费者", "手机银行", "第二条 借款日利率0.03%，每天仅需3元。\n第五条 本行有权根据市场情况单方调整利率，无需另行通知。\n第八条 借款人逾期的，本行有权联系借款人通讯录中的亲友及工作单位。\n第九条 因系统原因造成的损失，本行不承担任何责任。\n第十条 借款人放弃对本合同条款提出异议的权利。"],
+  宣传: ["“稳盈”理财宣传海报", "大众客户", "网点海报、朋友圈", "稳盈理财，零风险高收益！业绩比较基准4.8%，同类产品收益最高。历史业绩年年正收益，安全如存款。限时抢购，仅限今日！本活动最终解释权归本行所有。"]
+};
+const NEG = /不|没有|并非|禁止|切勿|勿|别|严禁|避免|非|谈|说成|误|杜绝|防止/;
+const C_RULES = [
+  ["中", "绝对化用语", /最高|最佳|第一|唯一|顶级|全网最|史上|100%|国家级/],
+  ["高", "“最终解释权”条款", /最终解释权/],
+  ["高", "单方变更或免除本行责任", /有权单方|单方面?(变更|调整|修改|解除)|无需(另行)?通知|不承担任何责任|概不负责|概不退还/],
+  ["高", "默认同意或默认勾选", /视为(您)?(已)?同意|默认(勾选|同意|开通)|自动开通/],
+  ["高", "捆绑搭售", /须同时(购买|办理|开通)|必须(同时)?(购买|开通|办理)|捆绑|搭售|方可(使用|办理)/],
+  ["高", "个人信息提供第三方或用于营销", /(提供|共享|授权).{0,12}(第三方|合作机构|关联公司)|用于.{0,6}营销/],
+  ["高", "催收触及无关第三人", /联系.{0,10}(亲友|亲属|家人|单位|同事)|通讯录/],
+  ["高", "限制投诉或诉讼权利", /不得(再)?(向.{0,8})?(投诉|起诉)|放弃.{0,10}(权利|追索|诉讼|异议)|不予受理/],
+  ["中", "疑似以礼品变相揽存", /返现|贴息|送.{0,6}(米面油|礼品|好礼|大礼包)|存.{0,6}送/],
+  ["中", "饥饿营销或诱导性表述", /限时|仅限(今日|本月|当天)|最后\d*天|名额有限|抢购/],
+  ["中", "保险或理财与存款混淆", /安全如存款|像存款一样|存款型保险|保险.{0,4}(就是|等于|相当于).{0,4}存款/]
+];
+const C_GAPS = [
+  ["中", "利率未按年化方式展示", t => /日息|月息|日利率|月利率|每天(仅|只)需|每日(仅|只)需|万分之/.test(t) && !/年化/.test(t)],
+  ["中", "过往业绩未提示“不代表未来表现”", t => /(历史|过往|往期|以往).{0,6}(业绩|收益)/.test(t) && !/不代表/.test(t)],
+  ["中", "缺少风险揭示", t => /理财|基金|保险|信托|贵金属/.test(t) && !/风险(提示|揭示|等级|自担|测评)|投资须谨慎/.test(t)],
+  ["提示", "未见犹豫期或冷静期说明", t => /理财|保险/.test(t) && !/犹豫期|冷静期/.test(t)],
+  ["提示", "未见投诉渠道", t => !/投诉渠道|投诉电话|客服热线|热线|95\d{3}/.test(t)]
+];
+const sentOf = (t, i, n) => { const a = Math.max(t.lastIndexOf("\n", i), ...["。", "！", "；"].map(c => t.lastIndexOf(c, i))) + 1; let b = t.slice(i + n).search(/[。！；\n]/); b = b < 0 ? t.length : i + n + b + 1; return t.slice(a, b).trim().slice(0, 60); };
+function consumerCheck(t, type, crowd) {
+  const out = [];
+  riskyClaims(t).forEach(w => out.push({ lv: "高", item: "承诺保本保收益或“零风险”类表述", hit: w }));
+  C_RULES.forEach(([lv, item, re]) => { const g = new RegExp(re.source, "g"); let m; while ((m = g.exec(t))) { if (!NEG.test(t.slice(Math.max(0, m.index - 10), m.index))) { out.push({ lv, item, hit: sentOf(t, m.index, m[0].length) }); break; } } });
+  C_GAPS.forEach(([lv, item, f]) => { if (f(t)) out.push({ lv, item, hit: "材料中未见" }); });
+  if (["产品", "服务", "协议"].includes(type) && !/费|免费/.test(t)) out.push({ lv: "提示", item: "未见收费项目与标准", hit: "材料中未见" });
+  if (/老年|老人|养老|银发|60岁|65岁/.test(crowd + t)) out.push({ lv: "提示", item: "面向老年客群：须评估适老化与适当性", hit: "目标客群" });
+  const order = { 高: 0, 中: 1, 提示: 2 }; return out.sort((a, b) => order[a.lv] - order[b.lv]);
+}
+const CONCL = /暂缓上线|修改后上线|同意上线/;
+function Consumer() {
+  const a = AG.consumer, R = useRun(a), s = useStore();
+  const [type, setType] = useState("宣传"); const [name, setName] = useState(""); const [crowd, setCrowd] = useState(""); const [channel, setChannel] = useState(""); const [text, setText] = useState("");
+  const [pre, setPre] = useState(null); const [o, setO] = useOut(); const [fname, setFname] = useState(""); const [busy, setBusy] = useState(false); const inp = useRef(null);
+  const [book, setBook] = useState(() => LS.get("reviews", []));
+  const tl = C_TYPES.find(x => x[0] === type)[1];
+  const load = async f => { if (!f) return; setBusy(true); try { const t = clean(await parseFile(f)); setText(t); setFname(f.name); if (!name) setName(f.name.replace(/\.[^.]+$/, "")); setPre(null); R.log(`本机读取文件：${f.name}（${t.length} 字）`); audit(a.name, "本机读取文件", f.name); } catch (e) { toast(e.message); } finally { setBusy(false); } };
+  const scan = () => { if (!text.trim()) { toast("请先粘贴、上传材料或点“填入示例”"); return null; } const r = consumerCheck(text, type, crowd); setPre(r); R.log(`本机初筛：高 ${r.filter(x => x.lv === "高").length} 项、中 ${r.filter(x => x.lv === "中").length} 项、提示 ${r.filter(x => x.lv === "提示").length} 项`); R.setStats(x => ({ ...x, hits: x.hits + r.length })); return r; };
+  const gen = async () => {
+    const r = scan(); if (!r) return;
+    if (PII.some(re => re.test(text))) return toast("材料里有疑似证件号、手机号或卡号，请先自动脱敏");
+    const h = retrieve(`消费者权益保护 审查 宣传 收费 格式条款 个人信息 投诉 ${tl} ${text.slice(0, 300)}`, s.docs, 6, 5000); R.log(`参考本行制度 ${h.length} 段`);
+    audit(a.name, "消保审查", `${tl}：${name || "未命名"}`);
+    const t = await R.run({ type, name, crowd, channel, text, pre: r.map((x, i) => `${i + 1}. [${x.lv}] ${x.item}：${x.hit}`).join("\n"), docs: h.length ? asDocs(h) : undefined }, setO, "消保审查意见");
+    if (t) { const c = (t.match(CONCL) || ["待定"])[0]; const nb = [{ at: day(), type: tl, name: name || "未命名", c, n: r.length }, ...book].slice(0, 20); setBook(nb); LS.set("reviews", nb); R.log("审查结论：" + c); }
+  };
+  const report = () => `消费者权益保护审查意见书（初稿）\n\n审查对象：${name || "未命名"}\n审查类型：${tl}\n目标客群：${crowd || "未说明"}\n发布渠道：${channel || "未说明"}\n审查日期：${day()}\n\n【本机初筛】\n${(pre || []).map((x, i) => `${i + 1}. [${x.lv}] ${x.item}：${x.hit}`).join("\n") || "无"}\n\n【审查意见】\n${o.text}\n\n本意见书由智能体辅助生成，仅为审查初稿，最终以消费者权益保护部门审查意见为准。\n审查人：__________    复核人：__________`;
+  const exp = word => { download(`消保审查意见书_${(name || "未命名").replace(/[\\/:*?"<>|]/g, "")}`, report(), word); audit(a.name, "导出审查意见书", word ? "Word" : "TXT"); };
+  const concl = o.text && !o.live ? (o.text.match(CONCL) || [null])[0] : null;
+  const lvc = { 高: "bad", 中: "warn", 提示: "" };
+  return html`<${Shell} a=${a} R=${R} extra=${html`<button className="btn pri" type="button" onClick=${() => { const [n, c, ch, t] = C_SAMPLES[type]; setName(n); setCrowd(c); setChannel(ch); setText(t); setFname(""); setPre(null); setO("", false); toast("已填入示例：" + tl); }}><${Icon} n="play"/>填入示例</button>`}>
+    <${Seg} items=${C_TYPES} value=${type} set=${k => { setType(k); setPre(null); setO("", false); }}/>
+    <div className="grid2">
+      <section className="panel"><div className="ph"><h2><i><${Icon} n="shield"/></i>待审查材料</h2><div className="acts"><${PiiBtn} text=${text} set=${setText}/><button className="btn sm" type="button" disabled=${busy} onClick=${() => inp.current.click()}>${busy ? html`<span className="spinner"></span>` : html`<${Icon} n="upload"/>`}上传文件</button></div>
+          <input ref=${inp} type="file" hidden accept=".pdf,.docx,.txt,.md,.html,.htm,.csv" onChange=${e => { load(e.target.files[0]); e.target.value = ""; }}/></div>
+        <div className="fields"><label className="field">名称<input type="text" value=${name} onInput=${e => setName(e.target.value)} placeholder=${"例如：" + C_SAMPLES[type][0]}/></label><label className="field">目标客群<input type="text" value=${crowd} onInput=${e => setCrowd(e.target.value)} placeholder="例如：60岁以上老年客户"/></label><label className="field">销售或发布渠道<input type="text" value=${channel} onInput=${e => setChannel(e.target.value)} placeholder="例如：网点、手机银行、朋友圈"/></label></div>
+        ${fname ? html`<div className="small" style=${{ margin: "8px 0 0" }}>已读取：${fname}（在本机解析）</div>` : null}
+        <textarea style=${{ minHeight: 200, marginTop: 10 }} value=${text} onInput=${e => { setText(e.target.value); setPre(null); }} aria-label="待审查材料" placeholder="粘贴产品说明、服务流程、制度条文、协议条款或宣传文案，或上传 Word、PDF、TXT 文件（演示请用虚构内容）"></textarea>
+        <div className="acts" style=${{ marginTop: 12 }}><button className="btn" type="button" onClick=${scan}>本机初筛</button><button className="btn pri" type="button" disabled=${R.st === "run"} onClick=${gen}>${R.st === "run" ? html`<span className="spinner"></span>` : null}生成审查意见</button><span className="small">初筛在本机完成，不调用模型</span></div>
+        ${pre ? html`<div style=${{ marginTop: 12 }}><div className="small" style=${{ marginBottom: 6 }}>本机初筛：${pre.length ? `发现 ${pre.length} 项，供审查参考，可能有误报` : "未发现规则命中项，仍须人工审查"}</div>
+          <div className="tl" style=${{ display: "grid", gap: 6 }}>${pre.map((x, i) => html`<div key=${i} className=${"alert " + lvc[x.lv]} style=${{ margin: 0, padding: "6px 10px" }}><b>[${x.lv}] ${x.item}</b><span className="small" style=${{ display: "block" }}>${x.hit}</span></div>`)}</div></div>` : null}</section>
+      <section className="panel"><div className="ph"><h2>审查意见</h2><div className="acts">${concl ? html`<span className=${"chip " + ({ 同意上线: "g", 修改后上线: "a", 暂缓上线: "r" })[concl]}>${concl}</span>` : null}<button className="btn sm" type="button" disabled=${!o.text} onClick=${() => copyText(o.text)}><${Icon} n="copy"/>复制</button><button className="btn sm" type="button" disabled=${!o.text || o.live} onClick=${() => exp(true)}>导出意见书 Word</button><button className="btn sm" type="button" disabled=${!o.text || o.live} onClick=${() => exp(false)}>TXT</button></div></div>
+        <${OutBox} o=${o} empty="生成审查结论、问题清单、八项权利检视、修改示范、上线前须补齐事项和审查意见摘要。"/>
+        <p className="small" style=${{ borderTop: "1px dashed rgba(132,204,22,.4)", paddingTop: 8, color: "#d9f99d" }}>审查初稿供消保岗参考，最终以消费者权益保护部门审查意见为准；业务部门须逐条反馈采纳情况。</p></section>
+    </div>
+    <section className="panel" style=${{ marginTop: 16 }}><div className="ph"><h2>本机审查台账</h2>${book.length ? html`<button className="btn sm danger" type="button" onClick=${() => { setBook([]); LS.set("reviews", []); }}><${Icon} n="trash"/>清空</button>` : null}</div>
+      ${book.length ? html`<div className="scroll"><table className="t"><thead><tr><th>日期</th><th>类型</th><th>名称</th><th>初筛项</th><th>结论</th></tr></thead><tbody>${book.map((b, i) => html`<tr key=${i}><td>${b.at}</td><td>${b.type}</td><td>${b.name}</td><td>${b.n}</td><td>${b.c}</td></tr>`)}</tbody></table></div>` : html`<p className="small">每次生成审查意见后记一笔，只保存在本浏览器，便于演示审查留痕。</p>`}</section></${Shell}>`;
+}
+
 /* --- 提示词助手 --- */
 const KINDS = ["自动判断", "客户沟通与挽留", "资产配置", "营销活动", "公文写作", "数据分析", "培训课件", "其他"];
-const ROUTES = [["mask", /脱敏|身份证号|敏感信息|隐私/g], ["qa", /制度|规定|能不能|是否可以|条款|管理办法/g], ["script", /话术|怎么说|怎么回答|应答/g], ["minutes", /纪要|会议|通知|公文|工作总结|转写/g], ["credit", /授信|调查报告|财务报表|贷款材料|勾稽/g], ["wealth", /资产配置|配置方案|亏损|回撤|净值|赎回|私行|闲置|他行/g], ["branch", /厅堂|网点|营销活动|获客|邀约|外拓|微宣讲|客流|老带新/g]];
+const ROUTES = [["mask", /脱敏|身份证号|敏感信息|隐私/g], ["qa", /制度|规定|能不能|是否可以|条款|管理办法/g], ["script", /话术|怎么说|怎么回答|应答/g], ["minutes", /纪要|会议|通知|公文|工作总结|转写/g], ["credit", /授信|调查报告|财务报表|贷款材料|勾稽/g], ["wealth", /资产配置|配置方案|亏损|回撤|净值|赎回|私行|闲置|他行/g], ["branch", /厅堂|网点|营销活动|获客|邀约|外拓|微宣讲|客流|老带新/g], ["consumer", /消保|消费者权益|宣传|海报|格式条款|协议|新产品|上线|审查|投诉|霸王条款|搭售/g]];
 const routeOf = t => ROUTES.map(([id, re]) => [id, (t.match(re) || []).length]).filter(x => x[1] >= 2).sort((a, b) => b[1] - a[1]);
 const TPL = [
   { id: "t1", title: "客户挽留与资产配置（模板）", text: "你是银行理财经理的沟通教练，要求合规：不得承诺保本或收益，不贬低同业，产品须匹配客户风险等级。\n客户情况：【客户类型、年龄、风险等级、持有产品及盈亏、情绪和诉求、活期余额、他行资金】\n本行可用产品：【产品名称、风险等级、期限、起购金额、当期利率或业绩比较基准】\n请输出：\n1. 前 5 分钟的安抚话术（先共情，不辩解）\n2. 用大白话解释亏损原因（一个比喻）\n3. 给客户的 2—3 个选择及对应话术（含“转本行定期”的承接方案）\n4. 分账户配置建议（存款打底、理财增值、灵活备用，各放多少）\n5. 吸纳闲置活期和他行到期资金的建议\n6. 后续 3 个月的回访计划", at: "内置" },
@@ -742,7 +826,7 @@ function Tags({ tags, docs, pick }) {
 }
 
 /* ---------------- 管理端 ---------------- */
-const POS = [["客户经理", "32 人"], ["理财经理", "12 人"], ["柜员", "28 人"], ["大堂经理", "14 人"], ["授信岗", "9 人"], ["综合岗", "21 人"]];
+const POS = [["客户经理", "32 人"], ["理财经理", "12 人"], ["柜员", "28 人"], ["大堂经理", "14 人"], ["授信岗", "9 人"], ["消保岗", "4 人"], ["综合岗", "21 人"]];
 function Manage() {
   const s = useStore();
   const calls = Object.values(s.runs).reduce((n, r) => n + (r.n || 0), 0);
@@ -766,7 +850,7 @@ function Manage() {
 /* ---------------- 根组件 ---------------- */
 function App() {
   const route = useHash(); const s = useStore();
-  const Page = route === "kb" ? KB : route === "manage" ? Manage : { mask: Mask, qa: QA, script: Script, minutes: Minutes, credit: Credit, wealth: Wealth, branch: Branch, prompt: PromptGen }[route] || Home;
+  const Page = route === "kb" ? KB : route === "manage" ? Manage : { mask: Mask, qa: QA, script: Script, minutes: Minutes, credit: Credit, wealth: Wealth, branch: Branch, consumer: Consumer, prompt: PromptGen }[route] || Home;
   useEffect(() => { if (AG[route] && !s.enabled[route]) { toast("需要管理员为你的岗位开通"); go("home"); } }, [route]);
   return html`<${React.Fragment}>
     <${Top} route=${route}/>
